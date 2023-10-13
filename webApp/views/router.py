@@ -1,7 +1,7 @@
 
 import flet as ft
 
-# from views.home import Home
+from views.home import Home
 # from views.week_reports import WeekReports
 # from views.general_reports import GeneralReports
 
@@ -22,7 +22,7 @@ class Router:
         # Default route and page to be displayed
         self.view: ft.Container = ft.Container(
             border = ft.border.all(1, "#FF0000"),
-            content = self.routes["/"]
+            content = self.routes["/"],
             expand = True
         )
 

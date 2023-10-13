@@ -1,6 +1,8 @@
 
 import flet as ft
 
+from views.router import Router
+
 
 def main(page: ft.Page):
     # Page properties
@@ -12,23 +14,18 @@ def main(page: ft.Page):
         "Roboto Bold" : "/fonts/Roboto-Bold.ttf",
     }
 
-    text: ft.Text = ft.Text(
-        "MedWay Solutions", 
-        font_family = "Roboto Bold", 
-        size = 70, 
-        color = "#000000"
-    )
+    # Declares the router from the Router class to handle the navigation
+    # between the pages.
+    router: Router = Router(page)
 
-    text_2: ft.Text = ft.Text(
-        "Sept. 20 - Sept. 26",
-        font_family = "Arimo",
-        size = 20,
-        color = "#000000"
-    )
+    # Assignment of the route to which the user will be redirected by default.
+    page.on_route_change = router.route_change
 
-    page.add(text)
-    page.add(text_2)
-    page.update()
+    # Adds the home page to the page.
+    page.add(router.view)
+
+    # Access to the app's home screen.
+    page.go("/")
 
 
 if __name__ == "__main__":

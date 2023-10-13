@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "sensoringModule",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

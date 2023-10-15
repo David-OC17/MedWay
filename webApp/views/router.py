@@ -12,10 +12,11 @@ class Router:
     the app's navigation bar.
     """
 
-    def __init__(self, page: ft.Page) -> None:
+    def __init__(self, page: ft.Page, date_time: ft.Text) -> None:
         self.page: ft.Page = page
+        self.date_time: ft.Text = date_time
         self.routes: dict[str, ft.Column] = {
-            "/" : Home(page),
+            "/" : Home(page, date_time),
             # "/week_reports" : WeekReports(page),
             # "/general_reports" : GeneralReports(page),
         }

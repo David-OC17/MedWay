@@ -5,7 +5,7 @@ from styles.s_home import SHome
 from styles.styles import Styles
 
 
-def Home(page: ft.Page) -> ft.Column:
+def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
     """
     Home page of the app.
 
@@ -25,7 +25,7 @@ def Home(page: ft.Page) -> ft.Column:
     styles: dict[str] = Styles.home_styles()
 
     # Title of the home page
-    title: ft.Container = SHome.title()
+    title: ft.Container = SHome.title(date_time)
 
     # Properties of the home page
     view: ft.Column = ft.Column(

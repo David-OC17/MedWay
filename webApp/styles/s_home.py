@@ -14,7 +14,7 @@ class SHome:
     from the :file:`home.py` for creating the home page.
     """
 
-    def title() -> ft.Container:
+    def title(date_time: ft.Text) -> ft.Container:
         """
         Title of the home page.
         
@@ -31,7 +31,7 @@ class SHome:
             font_family = "Roboto Bold",
             size = styles["logo"]["size"],
             color = styles["logo"]["color1"],
-            weight = ft.FontWeight.W_300,
+            weight = ft.FontWeight.BOLD,
             text_align = ft.TextAlign.CENTER
         )
 
@@ -41,7 +41,7 @@ class SHome:
             font_family = "Roboto Bold",
             size = styles["logo"]["size"],
             color = styles["logo"]["color2"],
-            weight = ft.FontWeight.W_300,
+            weight = ft.FontWeight.BOLD,
             text_align = ft.TextAlign.CENTER
         )
 
@@ -54,7 +54,8 @@ class SHome:
                 spacing = 1,
                 controls = [
                     title_part1,
-                    title_part2
+                    title_part2,
+                    date_time
                 ]
             )
         )

@@ -37,7 +37,7 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
             ft.Container(
                 expand = True,
                 content = ft.Column(
-                    alignment = ft.MainAxisAlignment.SPACE_EVENLY,
+                    alignment = ft.MainAxisAlignment.CENTER,
                     controls = [
                         # Title of the home page
                         ft.Row(

@@ -35,14 +35,15 @@ def main(page: ft.Page) -> None:
     }
 
     # Current date and time
-    now: str = lambda: strftime("%d/%b/%Y %H:%M:%S")
+    now: str = lambda: strftime("%d/%b/%Y  %H:%M:%S")
 
     # Text control containing the current date and time
     date_time: ft.Text = ft.Text(
         now(),
-        font_family = "Roboto Regular",
-        size = 70,
-        color = "#000000",
+        width = 575,
+        font_family = "Arimo",
+        size = 35,
+        color = "#3A3E5F",
         weight = ft.FontWeight.W_300,
         text_align = ft.TextAlign.CENTER
     )

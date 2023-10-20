@@ -17,10 +17,14 @@ class Styles:
 
         home_styles_dict: dict[str] = {
             "logo" : {
-                "font_family" : "Roboto Bold",
+                "title_font" : "Roboto Bold",
+                "text_font" : "Arimo",
                 "color1" : "#3A3E5F",
                 "color2" : "#0BA391",
-                "size" : 70,
+                "width" : 575,
+                "height" : 700,
+                "title_size" : 124,
+                "text_size" : 75,
             }
         }
 

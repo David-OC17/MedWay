@@ -3,6 +3,7 @@ import flet as ft
 
 from styles.s_home import SHome
 from styles.styles import Styles
+from other.nav_bar import NavBar
 
 
 def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
@@ -24,6 +25,9 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
     # for the home page.
     styles: dict[str] = Styles.home_styles()
 
+    # Navigation bar
+    nav_bar: ft.Card = NavBar().nav_bar(page)
+
     # Title of the home page
     title: ft.Container = SHome.title(date_time)
 
@@ -43,6 +47,7 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
                         ft.Row(
                             alignment = ft.MainAxisAlignment.CENTER,
                             controls = [
+                                nav_bar,
                                 title
                             ]
                         )

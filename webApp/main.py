@@ -27,6 +27,7 @@ def main(page: ft.Page) -> None:
 
     # Page properties
     page.title: str = "MedWay Dashboard"
+    page.padding: int = 0
     page.bgcolor: str = "#FFFFFF"
     page.fonts: dict[str] = {
         "Arimo" : "/fonts/Arimo-VariableFont_wght.ttf",

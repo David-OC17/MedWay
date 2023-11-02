@@ -30,7 +30,7 @@ class SHome:
             "MedWay",
             width = styles["logo"]["width"],
             font_family = styles["logo"]["title_font"],
-            size = styles["logo"]["size"],
+            size = styles["logo"]["title_size"],
             color = styles["logo"]["color1"],
             weight = ft.FontWeight.BOLD,
             text_align = ft.TextAlign.CENTER
@@ -77,11 +77,11 @@ class SHome:
 
         # Container for the components of the home page
         title_content: ft.Container = ft.Container(
-            width = styles["logo"]["width"],
-            height = styles["logo"]["height"],
+            expand = True,
             alignment = ft.alignment.center,
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
+                offset = ft.Offset(-0.04, 0),
                 controls = [
                     ft.Row(
                         alignment = ft.MainAxisAlignment.CENTER,

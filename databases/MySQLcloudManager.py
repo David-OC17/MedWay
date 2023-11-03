@@ -62,7 +62,6 @@ class MySQLmanager:
         '''
         self.create_sensor_data_table()
         self.create_batch_alerts_table()
-        self.create_batch_position_table()
         self.establish_relationships()
         
     def create_sensor_data_table(self) -> None:
@@ -75,6 +74,9 @@ class MySQLmanager:
                 batch_number INT,
                 device_number INT,
                 date DATE,
+                time TIME,
+                x_coordinate FLOAT,
+                y_coordinate FLOAT,
                 temperature FLOAT,
                 humidity FLOAT,
                 light_percentage FLOAT
@@ -112,29 +114,6 @@ class MySQLmanager:
             if connection.is_connected():
                 cursor.close()
                 connection.close()
-
-    def create_batch_position_table(self) -> None:
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
-            create_batch_position_query = """
-            CREATE TABLE IF NOT EXISTS batch_position (
-                batch_number INT,
-                date DATE,
-                time TIME,
-                x_coordinate FLOAT,
-                y_coordinate FLOAT
-            );
-            """
-            cursor.execute(create_batch_position_query)
-            connection.commit()
-            print("Batch Position table created successfully.")
-        except Error as e:
-            print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
                 
     # Establish relationships between tables using foreign keys (batch number)
     def establish_relationships(self) -> None:
@@ -143,9 +122,6 @@ class MySQLmanager:
             cursor = connection.cursor()
             foreign_key_query = """
             ALTER TABLE batch_alerts
-            ADD FOREIGN KEY (batch_number) REFERENCES sensor_data(batch_number);
-            
-            ALTER TABLE batch_position
             ADD FOREIGN KEY (batch_number) REFERENCES sensor_data(batch_number);
             """
             cursor.execute(foreign_key_query)
@@ -204,8 +180,8 @@ class MySQLmanager:
             
             # Define the INSERT INTO query with placeholders for data
             insert_query = """
-            INSERT INTO sensor_data (batch_number, device_number, date, temperature, humidity, light_percentage)
-            VALUES (%s, %s, %s, %s, %s, %s);
+            INSERT INTO sensor_data (batch_number, device_number, date, time, x_coordinate, y_coordinate temperature, humidity, light_percentage)
+            VALUES (%s, %s, %s, %s, %s, %s, %s ,%s ,%s);
             """
             
             # Execute the query with data_list as a list of tuples
@@ -230,11 +206,28 @@ class MySQLmanager:
         '''
         pass
     
-    def pushBatchPosition(self, startDate:date, endDate:date)-> bool:
+    #################### END -> Push to cloud ####################
+    
+    #################### START -> Delete from local ####################
+    # Use this methods in order to delete the uploaded data from the local database
+    def removeSensorData(self, starID: int, endID: int) -> bool:
         '''
-        Takes data from local batch position data table from startID to endID and pushes it to the cloud.
-        Returns if upload was successful.
+        Remove the sensor data in the range given by startID-endID.
+        Use it to clean local database and avoid data cloning local-cloud.
+        Return if the removal was successfull.
         '''
+        if self.managerType != 'local':
+            raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
+        pass
+        
+    def removeBatchAlerts(self, startAlertNum: int, endAlertNum: int)-> bool:
+        '''
+        Remove the sensor data in the range given by startAlertNum-endAlertNum.
+        Use it to clean local database and avoid data cloning local-cloud.
+        Return if the removal was successfull.
+        '''
+        if self.managerType != 'local':
+            raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
         pass
     
     #################### END -> Push to cloud ####################
@@ -251,9 +244,7 @@ class MySQLmanager:
         '''
         pass
     
-    
     #################### END -> Querry tables ####################
-    
     
     def receiver(self) -> None:
         '''
@@ -278,10 +269,3 @@ class MySQLmanager:
         
         # Get the the date and time range for the position data alert
         pass
-
-
-
-
-
-############################################
-

@@ -28,7 +28,10 @@ class QuerryResult:
             ('date', 'datetime64[D]'),  # Using datetime64[D] for date
             ('temperature', np.float64),
             ('humidity', np.float64),
-            ('light_percentage', np.float64)
+            ('light_percentage', np.float64),
+            ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
+            ('x_coordinate', np.float64),
+            ('y_coordinate', np.float64)
         ])
         
         self.batch_alerts_dtype = np.dtype([
@@ -37,36 +40,18 @@ class QuerryResult:
             ('temperature_alert', np.bool_),
             ('humidity_alert', np.bool_),
             ('light_alert', np.bool_)
-        ])
-        
-        self.batch_position_dtype = np.dtype([
-            ('batch_number', np.int64),
-            ('date', 'datetime64[D]'),
-            ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
-            ('x_coordinate', np.float64),
-            ('y_coordinate', np.float64)
-        ])
-        
-        
+        ])        
 
         if querryType == 'a':
             self.sensor_data = np.array([], dtype=self.sensor_data_dtype)
             self.batch_alerts = np.array([], dtype=self.sensor_data_dtype)
-            self.batch_positions = np.array([], dtype=self.sensor_data_dtype)
             
         elif querryType == 's':
             self.sensor_data = np.array([], dtype=self.sensor_data_dtype)
             
-        elif querryType == 'sba':
-            self.sensor_data = np.array([], dtype=self.sensor_data_dtype)
-            self.batch_alerts = np.array([], dtype=self.sensor_data_dtype)
-            
         elif querryType == 'ba':
             self.batch_alerts = np.array([], dtype=self.sensor_data_dtype)
-            
-        elif querryType == 'bp':
-            self.batch_positions = np.array([], dtype=self.sensor_data_dtype)
-            
+
         else:
             raise ValueError('Not a valid type for QuerryResult.')
             

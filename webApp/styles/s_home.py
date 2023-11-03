@@ -81,7 +81,8 @@ class SHome:
             alignment = ft.alignment.center,
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
-                offset = ft.Offset(-0.04, 0),
+                # Used to center the title of the home page with respect to screen
+                # offset = ft.Offset(-0.04, 0),
                 controls = [
                     ft.Row(
                         alignment = ft.MainAxisAlignment.CENTER,

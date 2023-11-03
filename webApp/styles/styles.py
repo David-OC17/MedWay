@@ -59,3 +59,119 @@ class Styles:
         }
 
         return home_styles_dict
+
+
+    def week_reports_styles() -> dict[str]:
+        """
+        Styles for the week reports page components.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`week_reports_styles_dict` (dict[str]): The styles for the week reports page components.
+        """
+
+        week_reports_styles_dict: dict[str] = {
+            "name": {
+                "font" : "Roboto Bold",
+                "color1" : "#3A3E5F",
+                "color2" : "#0BA391",
+                "size" : 70,
+            },
+            "title" : {
+                "font" : "Roboto Bold",
+                "color" : "#3A3E5F",
+                "size" : 70,
+                "height" : 175,
+            }
+        }
+
+        return week_reports_styles_dict
+
+
+    def general_reports_styles() -> dict[str]:
+        """
+        Styles for the general reports page components.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`general_reports_styles_dict` (dict[str]): The styles for the general reports page components.
+        """
+
+        general_reports_styles_dict: dict[str] = {
+            "name": {
+                "font" : "Roboto Bold",
+                "color1" : "#3A3E5F",
+                "color2" : "#0BA391",
+                "size" : 70,
+            },
+            "title" : {
+                "font" : "Roboto Bold",
+                "color" : "#3A3E5F",
+                "size" : 70,
+                "height" : 175,
+            }
+        }
+
+        return general_reports_styles_dict
+
+
+    def analytics_styles() -> dict[str]:
+        """
+        Styles for the analytics page components.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`analytics_styles_dict` (dict[str]): The styles for the analytics page components.
+        """
+
+        analytics_styles_dict: dict[str] = {
+            "name": {
+                "font" : "Roboto Bold",
+                "color1" : "#3A3E5F",
+                "color2" : "#0BA391",
+                "size" : 70,
+            },
+            "title" : {
+                "font" : "Roboto Bold",
+                "color" : "#3A3E5F",
+                "size" : 70,
+                "height" : 175,
+            }
+        }
+
+        return analytics_styles_dict
+
+
+    def analytics_styles() -> dict[str]:
+        """
+        Styles for the analytics page components.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`analytics_styles_dict` (dict[str]): The styles for the analytics page components.
+        """
+
+        analytics_styles_dict: dict[str] = {
+            "name": {
+                "font" : "Roboto Bold",
+                "color1" : "#3A3E5F",
+                "color2" : "#0BA391",
+                "size" : 70,
+            },
+            "title" : {
+                "font" : "Roboto Bold",
+                "color" : "#3A3E5F",
+                "size" : 70,
+                "height" : 175,
+            }
+        }
+
+        return analytics_styles_dict

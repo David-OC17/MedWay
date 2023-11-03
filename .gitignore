@@ -1,4 +1,10 @@
 #----------------------------------#
+# Other
+/databases/private_info.md
+/databases/config.py
+
+
+#----------------------------------#
 #           C .gitignore           #
 
 # Prerequisites

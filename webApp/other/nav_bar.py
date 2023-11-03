@@ -17,27 +17,160 @@ class NavBar:
         self._nav_bar: ft.Container = ft.Container()
 
 
-    def _button_on_hover(self, _: ft.HoverEvent, button: ft.Card) -> None:
+    def _home_button_on_hover(self, _: ft.HoverEvent) -> None:
         """
-        Elevates the button on hover.
+        Elevates the home button on hover.
 
         Parameters:
             - :param:`_` (ft.HoverEvent): The hover event.
-            - :param:`button` (ft.Card): The button to be elevated.
 
         Returns:
             - No return value.
         """
 
         if _.data == "true":
-            for __ in range(25):
-                button.elevation += 1
-                button.update()
+            for __ in range(20):
+                self._nav_bar.content.controls[1].elevation += 1
+                self._nav_bar.content.controls[1].update()
 
         else:
-            for __ in range(25):
-                button.elevation -= 1
-                button.update()
+            for __ in range(20):
+                self._nav_bar.content.controls[1].elevation -= 1
+                self._nav_bar.content.controls[1].update()
+
+
+    def _home_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+        """
+        Changes the route of the page on click.
+
+        Parameters:
+            - :param:`_` (ft.ControlEvent): The click event.
+            - :param:`page` (ft.Page): The current page of the app.
+
+        Returns:
+            - No return value.
+        """
+
+        self._nav_bar.content.controls[1].elevation = 0
+
+        page.go("/")
+
+
+    def _week_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
+        """
+        Elevates the week reports button on hover.
+
+        Parameters:
+            - :param:`_` (ft.HoverEvent): The hover event.
+
+        Returns:
+            - No return value.
+        """
+
+        if _.data == "true":
+            for __ in range(20):
+                self._nav_bar.content.controls[2].elevation += 1
+                self._nav_bar.content.controls[2].update()
+
+        else:
+            for __ in range(20):
+                self._nav_bar.content.controls[2].elevation -= 1
+                self._nav_bar.content.controls[2].update()
+
+
+    def _week_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+        """
+        Changes the route of the page on click.
+
+        Parameters:
+            - :param:`_` (ft.ControlEvent): The click event.
+            - :param:`page` (ft.Page): The current page of the app.
+
+        Returns:
+            - No return value.
+        """
+
+        self._nav_bar.content.controls[2].elevation = 0
+
+        page.go("/week_reports")
+
+
+    def _general_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
+        """
+        Elevates the general reports button on hover.
+
+        Parameters:
+            - :param:`_` (ft.HoverEvent): The hover event.
+
+        Returns:
+            - No return value.
+        """
+
+        if _.data == "true":
+            for __ in range(20):
+                self._nav_bar.content.controls[3].elevation += 1
+                self._nav_bar.content.controls[3].update()
+
+        else:
+            for __ in range(20):
+                self._nav_bar.content.controls[3].elevation -= 1
+                self._nav_bar.content.controls[3].update()
+
+
+    def _general_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+        """
+        Changes the route of the page on click.
+
+        Parameters:
+            - :param:`_` (ft.ControlEvent): The click event.
+            - :param:`page` (ft.Page): The current page of the app.
+
+        Returns:
+            - No return value.
+        """
+
+        self._nav_bar.content.controls[3].elevation = 0
+
+        page.go("/general_reports")
+
+
+    def _analytics_button_on_hover(self, _: ft.HoverEvent) -> None:
+        """
+        Elevates the analytics button on hover.
+
+        Parameters:
+            - :param:`_` (ft.HoverEvent): The hover event.
+
+        Returns:
+            - No return value.
+        """
+
+        if _.data == "true":
+            for __ in range(20):
+                self._nav_bar.content.controls[4].elevation += 1
+                self._nav_bar.content.controls[4].update()
+
+        else:
+            for __ in range(20):
+                self._nav_bar.content.controls[4].elevation -= 1
+                self._nav_bar.content.controls[4].update()
+
+
+    def _analytics_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+        """
+        Changes the route of the page on click.
+
+        Parameters:
+            - :param:`_` (ft.ControlEvent): The click event.
+            - :param:`page` (ft.Page): The current page of the app.
+
+        Returns:
+            - No return value.
+        """
+
+        self._nav_bar.content.controls[4].elevation = 0
+
+        page.go("/analytics")
 
 
     def nav_bar(self, page: ft.Page) -> ft.Container:
@@ -63,7 +196,8 @@ class NavBar:
                     src = "images/logo.png",
                     fit = ft.ImageFit.FILL
                 ),
-                on_hover = lambda _: self._button_on_hover(_, _home_button),
+                on_hover = lambda _: self._home_button_on_hover(_),
+                on_click = lambda _: self._home_button_on_click(_, page)
             )
         )
 
@@ -80,7 +214,8 @@ class NavBar:
                     color = styles["button"]["button_color"],
                     size = styles["button"]["button_size"]
                 ),
-                on_hover = lambda _: self._button_on_hover(_, _week_reports_button),
+                on_hover = lambda _: self._week_reports_button_on_hover(_),
+                on_click = lambda _: self._week_reports_button_on_click(_, page)
             )
         )
 
@@ -97,7 +232,8 @@ class NavBar:
                     color = styles["button"]["button_color"],
                     size = styles["button"]["button_size"]
                 ),
-                on_hover = lambda _: self._button_on_hover(_, _general_reports_button),
+                on_hover = lambda _: self._general_reports_button_on_hover(_),
+                on_click = lambda _: self._general_reports_button_on_click(_, page)
             )
         )
 
@@ -114,7 +250,8 @@ class NavBar:
                     color = styles["button"]["button_color"],
                     size = styles["button"]["button_size"]
                 ),
-                on_hover = lambda _: self._button_on_hover(_, _analytics_button),
+                on_hover = lambda _: self._analytics_button_on_hover(_),
+                on_click = lambda _: self._analytics_button_on_click(_, page)
             )
         )
 
@@ -124,9 +261,11 @@ class NavBar:
             bgcolor = styles["nav_bar"]["bgcolor"], 
             alignment = ft.alignment.center,
             content = ft.Column(
-                spacing = 25,
+                spacing = 35,
                 alignment = ft.MainAxisAlignment.START,
                 controls = [
+                    # Initial spacing
+                    ft.Container(width = 75, height = 15),
                     # Home page button
                     _home_button,
                     # Week reports button

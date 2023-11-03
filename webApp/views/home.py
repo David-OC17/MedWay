@@ -2,7 +2,6 @@
 import flet as ft
 
 from styles.s_home import SHome
-from styles.styles import Styles
 from other.nav_bar import NavBar
 
 
@@ -20,10 +19,6 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
     - Returns:
         - ft.Container: The home page.
     """
-
-    # Gets from the class :class:`Styles` from the file :file:`styles.py` the styles
-    # for the home page.
-    styles: dict[str] = Styles.home_styles()
 
     # Navigation bar
     nav_bar: ft.Card = NavBar().nav_bar(page)

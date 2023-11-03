@@ -21,7 +21,7 @@ def main(page: ft.Page) -> None:
 
         while True:
             date_time.value = now()
-            date_time.update()
+            page.update()
             sleep(1)
 
 

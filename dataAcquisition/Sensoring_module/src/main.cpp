@@ -10,41 +10,60 @@
 const int time2send = 3000;
 const int time2sample_dht = 1000;
 
+// Communication
+// EspSoftwareSerial::UART ss_gps;
+
 // Sensores
 DHT dht(DHT_PIN, DHTTYPE, 22);
 TinyGPSPlus gps;
 
-// Global vars
+// GLOBAL VARS FOR TELEMETRY //
+// DHT vars
 float hum, temp;
-unsigned int meters = 0;
+// GPS vars
+float lat, lon;
+float meters = 0;
 uint8_t sats = 0;
 
 // Time management
 unsigned long time_aux = 0;
 
 void setup() {
+  // UART channels
   Serial.begin(9600);
-  Serial2.begin(4800, SERIAL_8N1, 16, 17);  
+  Serial2.begin(9600);
+
+  // DHT temperature sensor
   dht.begin();
 }
 
 void loop() {
   if(millis() - time_aux >= time2send){
-    // GPS
-    if(Serial2.available()){
-      sats = gps.satellites.value();
-      meters = gps.altitude.meters();
-      Serial.println("Temperatura: " + String(temp));
-      Serial.println("Humedad: " + String(hum));
-      Serial.println("Satelites " + String(sats));
-      Serial.println("Altura: " + String(meters) + "\n");
-    }
 
     // DHT section
     hum = dht.readHumidity();
     temp = dht.readTemperature();
 
-    // Print
+    // GPS Section
+    while (Serial2.available())
+    {
+      char c = Serial2.read();
+      if (gps.encode(c)){   // If a valid sentence comes in get data
+        lat = gps.location.lat();
+        lon = gps.location.lng();
+        meters = gps.altitude.meters();
+        sats = gps.satellites.value();
+      }
+    }
+
+    // Print data
+    Serial.println("Temperatura: " + String(temp));
+    Serial.println("Humedad: " + String(hum));
+    Serial.println("Longitud: " + String(lon));
+    Serial.println("Latitud: " + String(lat));
+    Serial.println("Satelites " + String(sats));
+    Serial.println("Altura: " + String(meters) + "\n");
+
     time_aux = millis();
   }
   delay(10);

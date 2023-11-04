@@ -4,6 +4,7 @@ Test the connection to S3 by uploading an empty (blank) .pdf file.
 
 import boto3
 import sys
+from ..databases.config import cloud_database
 
 AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
@@ -22,3 +23,6 @@ def upload_progress_callback(bytes_transferred):
     sys.stdout.flush()
 
 s3.upload_file(testfile, BUCKET_NAME, 'my_test_file', Callback=upload_progress_callback)
+input("Click enter to continue to download file from bucket.")
+
+input("Click enter to continue to delete file from bucket.")

@@ -37,7 +37,7 @@ class MySQLmanager:
         '''
         if(managerType == 'cloud' or managerType == 'aws'):
             self.managerType = managerType
-            db_config = {
+            self.db_config = {
                 'host': cloud_host,
                 'user': cloud_user,
                 'password': cloud_password,
@@ -45,7 +45,7 @@ class MySQLmanager:
             }
         elif (managerType == 'local'):
             self.managerType = managerType
-            db_config = {
+            self.db_config = {
                 'host': local_host,
                 'user': local_user,
                 'password': local_password,
@@ -90,7 +90,7 @@ class MySQLmanager:
         finally:
             if connection.is_connected():
                 cursor.close()
-            connection.close()
+                connection.close()
 
     def create_batch_alerts_table(self) -> None:
         try:

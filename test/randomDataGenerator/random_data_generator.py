@@ -7,8 +7,10 @@ class RandomDataGenerator:
     """
     Generates random data for testing the database
     """
+    def __init__():
+        print('Data generator created.')
 
-    def generator() -> None:
+    def generator(numData:int) -> None:
         """
         Generates random data for humidity and returns it in a .csv file
         """
@@ -36,14 +38,18 @@ class RandomDataGenerator:
                     last_id: int = 0
 
             # Generate random data
-            batch_number: list[np.int64] = np.full((1, 1000), 195251).tolist()[0]
-            device_number: list[np.int64] = np.full((1, 1000), 729864).tolist()[0]
-            temperature: list[np.float64] = (6 * np.random.random_sample((1, 1000))).tolist()[0]
-            humidity: list[np.float64] = ((95 - 70) * np.random.random((1, 1000)) + 70).tolist()[0]
-            light_percentage: list[np.float64] = (15 * np.random.random_sample((1, 1000))).tolist()[0]
+            batch_number: list[np.int64] = np.full((1, numData), 195251).tolist()[0]
+            device_number: list[np.int64] = np.full((1, numData), 729864).tolist()[0]
+            temperature: list[np.float64] = (6 * np.random.random_sample((1, numData))).tolist()[0]
+            humidity: list[np.float64] = ((95 - 70) * np.random.random((1, numData)) + 70).tolist()[0]
+            light_percentage: list[np.float64] = (15 * np.random.random_sample((1, numData))).tolist()[0]
+            
+            #Add title to the .csv file
+            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
+            writer.writerow(header)
 
             # Write data to file
-            for idx in range(1000):
+            for idx in range(numData):
                 date: str = strftime("%d/%b/%Y %H:%M:%S")
                 row: tuple = (
                     last_id + 1,

@@ -4,7 +4,7 @@ Test the connection to S3 by uploading an empty (blank) .pdf file.
 
 import boto3
 import sys
-from ..databases.config import cloud_database
+from config import cloud_database
 
 AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''

@@ -5,6 +5,12 @@ MedWay: An IoT system for tracking medicines and vaccines from production to use
 
 Somethings to introduce the new user...
 
+Download [MySQL](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04) for local server.
+
+
+Optional:
+Download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to facilitate connection to AWS.
+
 ---
 
 ### Analysis

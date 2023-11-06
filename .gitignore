@@ -1,8 +1,10 @@
 #----------------------------------#
 # Other
-/databases/private_info.md
 /databases/config.py
+/test/databaseConnection/config.py
 
+# Ignore random data
+/test/randomDataGenerator/test_data.csv
 
 #----------------------------------#
 #           C .gitignore           #

@@ -2,9 +2,10 @@
 Connect and disconnect to the cloud, nothing else.
 '''
 
+from config import *
 import mysql.connector
 from mysql.connector import Error
-from ..databases.config import cloud_host, cloud_user, cloud_password, cloud_database, cloud_port
+
 
 db_config = {
                 'host': cloud_host,

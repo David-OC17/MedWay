@@ -1,24 +1,18 @@
-'''
-Connect and disconnect to the cloud, nothing else.
-'''
 
-from config import *
-import mysql.connector
-from mysql.connector import Error
+from mysql.connector import connect
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
+from config import cloud_host, cloud_user, cloud_password, cloud_database
 
+connection: MySQLConnection = connect(
+    host = cloud_host,
+    user = cloud_user,
+    password = cloud_password,
+    database = cloud_database
+)
 
-db_config = {
-                'host': cloud_host,
-                'user': cloud_user,
-                'password': cloud_password,
-                'database': cloud_database
-            }
+cursor: MySQLCursor = connection.cursor()
+print("Connected to RDS!")
 
-# Establish the connection
-connection = mysql.connector.connect(**db_config)
-
-# Create a cursor
-cursor = connection.cursor()
-
-# Close the connection
+cursor.close()
 connection.close()

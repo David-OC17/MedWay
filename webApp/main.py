@@ -7,7 +7,6 @@ from views.router import Router
 
 def main(page: ft.Page) -> None:
 
-    # Updates the current date and time on the home page.
     def current_date_time() -> None:
         """
         Updates the current date and time on the home page.
@@ -64,7 +63,6 @@ def main(page: ft.Page) -> None:
 
     # Updates the current date and time on the home page.
     current_date_time()
-
 
 
 if __name__ == "__main__":

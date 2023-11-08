@@ -24,7 +24,6 @@ class Router:
         }
         # Default route and page to be displayed
         self.view: ft.Container = ft.Container(
-            border = ft.border.all(1, "#FF0000"),
             content = self.routes["/"],
             expand = True
         )

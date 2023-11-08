@@ -62,7 +62,7 @@ class SHome:
 
         # Welcome text
         welcome: ft.Container = ft.Container(
-            width = 575,
+            width = styles["logo"]["width"],
             alignment = ft.alignment.center,
             content = ft.Text(
                 "Welcome",

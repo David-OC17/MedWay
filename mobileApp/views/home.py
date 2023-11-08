@@ -42,7 +42,7 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
                         ft.Row(
                             alignment = ft.MainAxisAlignment.CENTER,
                             controls = [
-                                nav_bar,
+                                # nav_bar,
                                 title
                             ]
                         )

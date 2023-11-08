@@ -51,10 +51,10 @@ class Styles:
                 "text_font" : "Arimo",
                 "color1" : "#3A3E5F",
                 "color2" : "#0BA391",
-                "width" : 575,
+                "width" : 290,
                 "height" : 700,
-                "title_size" : 124,
-                "text_size" : 75,
+                "title_size" : 60,
+                "text_size" : 30,
             }
         }
 

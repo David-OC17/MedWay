@@ -18,7 +18,7 @@ class Styles:
         nav_bar_styles_dict: dict[str] = {
             "nav_bar" : {
                 "width" : 100,
-                "height" : 1000,
+                "height" : 845,
                 "bgcolor" : "#3A3E5F"
             },
             "button" : {

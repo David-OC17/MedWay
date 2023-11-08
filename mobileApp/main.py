@@ -40,9 +40,9 @@ def main(page: ft.Page) -> None:
     # Text control containing the current date and time
     date_time: ft.Text = ft.Text(
         now(),
-        width = 575,
+        width = 290,
         font_family = "Arimo",
-        size = 35,
+        size = 20,
         color = "#3A3E5F",
         weight = ft.FontWeight.W_300,
         text_align = ft.TextAlign.CENTER

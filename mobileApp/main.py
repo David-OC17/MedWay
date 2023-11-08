@@ -48,6 +48,27 @@ def main(page: ft.Page) -> None:
         text_align = ft.TextAlign.CENTER
     )
 
+    page.navigation_bar = ft.NavigationBar(
+        destinations = [
+            ft.NavigationDestination(
+                icon = ft.icons.HOME,
+                label = "Home ",
+            ),
+            ft.NavigationDestination(
+                icon = ft.icons.DESCRIPTION,
+                label = "Weekly Reports",
+            ),
+            ft.NavigationDestination(
+                icon = ft.icons.COLLECTIONS_BOOKMARK,
+                label = "General Reports",
+            ),
+            ft.NavigationDestination(
+                icon = ft.icons.QUERY_STATS,
+                label = "Analytics",
+            )
+        ]
+    )
+
     # Declares the router from the Router class to handle the navigation
     # between the pages.
     router: Router = Router(page, date_time)

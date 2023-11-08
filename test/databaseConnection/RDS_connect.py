@@ -1,24 +1,40 @@
 '''
-Connect and disconnect to the cloud, nothing else.
+Test the connection to your local and RDS (remote-cloud) database via this script.
 '''
+import sys
+sys.path.append("../../")
 
-from config import *
-import mysql.connector
-from mysql.connector import Error
+from mysql.connector import connect
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
+from databases.config import *
 
+def main():
+    local_connection: MySQLConnection = connect(
+        host = cloud_host,
+        user = cloud_user,
+        password = cloud_password,
+        database = cloud_database
+    )
 
-db_config = {
-                'host': cloud_host,
-                'user': cloud_user,
-                'password': cloud_password,
-                'database': cloud_database
-            }
+    cloud_connection: MySQLConnection = connect(
+        host = cloud_host,
+        user = cloud_user,
+        password = cloud_password,
+        database = cloud_database
+    )
 
-# Establish the connection
-connection = mysql.connector.connect(**db_config)
+    local_cursor: MySQLCursor = local_connection.cursor()
+    print("Connected to local database!")
 
-# Create a cursor
-cursor = connection.cursor()
+    local_cursor.close()
+    local_connection.close()
 
-# Close the connection
-connection.close()
+    cloud_cursor: MySQLCursor = cloud_connection.cursor()
+    print("Connected to RDS!")
+
+    cloud_cursor.close()
+    cloud_connection.close()
+
+if __name__ == '__main__':
+    main()

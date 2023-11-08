@@ -4,7 +4,7 @@
 /test/databaseConnection/config.py
 
 # Ignore random data
-/test/randomDataGenerator/test_data.csv
+/test/data/test_data.csv
 
 #----------------------------------#
 #           C .gitignore           #

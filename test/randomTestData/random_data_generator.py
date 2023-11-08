@@ -25,16 +25,19 @@ class RandomDataGenerator:
         light_percentage -> (0% - 15%)
         """
 
-        with open("test_data.csv", "a") as file:
+        with open("../data/test_data.csv", "a") as file:
             # Create writer object
             writer = csv.writer(file)
 
             # Get last ID, if file is empty, set last ID to 0
-            with open("test_data.csv", "r") as file:
+            with open("../data/test_data.csv", "r") as file:
                 try:
                     last_line: str = file.readlines()[-2]
                     last_id: int = int(last_line[0:last_line.find(",")])
                 except IndexError:
+                    #Add title to the .csv file
+                    header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
+                    writer.writerow(header)
                     last_id: int = 0
 
             # Generate random data
@@ -44,10 +47,6 @@ class RandomDataGenerator:
             humidity: list[np.float64] = ((95 - 70) * np.random.random((1, numData)) + 70).tolist()[0]
             light_percentage: list[np.float64] = (15 * np.random.random_sample((1, numData))).tolist()[0]
             
-            #Add title to the .csv file
-            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
-            writer.writerow(header)
-
             # Write data to file
             for idx in range(numData):
                 date: str = strftime("%d/%b/%Y %H:%M:%S")

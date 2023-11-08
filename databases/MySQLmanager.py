@@ -18,9 +18,9 @@ or 'aws' option for a cloud database manager.
 import mysql.connector
 from mysql.connector import Error
 from datetime import date
-from allQuerryResult import QuerryResult
+from .allQuerryResult import QuerryResult
 
-from config import cloud_host, cloud_user, cloud_password, cloud_database, local_host, local_user, local_password, local_database
+from .config import *
 '''
 Store db_config variables in the following format in order to connect to AWS
 
@@ -34,6 +34,7 @@ class MySQLmanager:
     def __init__(self, managerType: str) -> None:
         '''
         managerType: 'cloud' = 'aws' or 'local'
+            or 'local_test' for testing
         '''
         if(managerType == 'cloud' or managerType == 'aws'):
             self.managerType = managerType
@@ -50,6 +51,14 @@ class MySQLmanager:
                 'user': local_user,
                 'password': local_password,
                 'database': local_database
+            }
+        elif (managerType == 'local_test'):
+            self.managerType = managerType
+            self.db_config = {
+                'host': test_host,
+                'user': test_user,
+                'password': test_password,
+                'database': test_database
             }
         else:
             raise ValueError("No suitable manager type for constructor of MySQLmanager. Use 'cloud' or 'local'.")
@@ -96,9 +105,12 @@ class MySQLmanager:
         try:
             connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
+            # The ID key is used in both tables, but only full IDs will be present in sensor_data table,
+            #   since not all of them generate an alert for batch_alerts table
             create_batch_alerts_query = """
             CREATE TABLE IF NOT EXISTS batch_alerts (
-                alert_number INT AUTO_INCREMENT PRIMARY KEY,
+                ID INT PRIMARY KEY,
+                alert_number AUTO_INCREMENT INT ,
                 batch_number INT,
                 temperature_alert BOOLEAN,
                 humidity_alert BOOLEAN,
@@ -168,7 +180,7 @@ class MySQLmanager:
     
     #################### START -> Push to cloud ####################
 
-    def pushSensorData(self, starID: int, endID: int) -> bool:
+    def pushSensorData(self, starID: int, endID: int) -> None:
         '''
         Takes data from local sensor data table from startID to endID and pushes it to the cloud.
         Returns if upload was successful.
@@ -192,14 +204,12 @@ class MySQLmanager:
             print("Records inserted successfully.")
         except Error as e:
             print(f"Error: {e}")
-            return False
         finally:
             if connection.is_connected():
                 cursor.close()
                 connection.close()
-            return True
     
-    def pushBatchAlerts(self, startAlertNum: int, endAlertNum: int)-> bool:
+    def pushBatchAlerts(self, startAlertNum: int, endAlertNum: int)-> None:
         '''
         Takes data from local batch alerts data table from startID to endID and pushes it to the cloud.
         Returns if upload was successful.
@@ -210,7 +220,7 @@ class MySQLmanager:
     
     #################### START -> Delete from local ####################
     # Use this methods in order to delete the uploaded data from the local database
-    def removeSensorData(self, starID: int, endID: int) -> bool:
+    def removeSensorData(self, startID: int, endID: int) -> None:
         '''
         Remove the sensor data in the range given by startID-endID.
         Use it to clean local database and avoid data cloning local-cloud.
@@ -218,9 +228,25 @@ class MySQLmanager:
         '''
         if self.managerType != 'local':
             raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
-        pass
         
-    def removeBatchAlerts(self, startAlertNum: int, endAlertNum: int)-> bool:
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            cursor = connection.cursor()
+            
+            delete_query = f"DELETE FROM sensor_data WHERE id >= {startID} AND id <= {endID}"
+            
+            cursor.execute(delete_query)
+            
+            connection.commit()
+            print("Range of rows deleted successfully from sensor data.")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+        
+    def removeBatchAlerts(self, startID: int, endID: int)-> None:
         '''
         Remove the sensor data in the range given by startAlertNum-endAlertNum.
         Use it to clean local database and avoid data cloning local-cloud.
@@ -228,9 +254,67 @@ class MySQLmanager:
         '''
         if self.managerType != 'local':
             raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
-        pass
+        
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            cursor = connection.cursor()
+            
+            delete_query = f"DELETE FROM batch_alerts WHERE id >= {startID} AND id <= {endID}"
+            
+            cursor.execute(delete_query)
+            
+            connection.commit()
+            print("Range of rows deleted successfully from sensor data.")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
     
-    #################### END -> Push to cloud ####################
+    def clearDatabase(self, confirmation:str='') -> None:
+        '''
+        Clear local/test database.
+        Requires confirmation word 'DELETE ME' to perform the operation.
+        Only meant for testing.
+        '''
+        # Ask for confirmation to clear the database
+        if confirmation != 'DELETE ME':
+            print('Confirmation not received, not clearing the database.')
+        elif self.managerType != 'local_test':
+            print('You can only clear all the database during testing and with a local_test manager.')
+        
+        confirmation = input('This a destructive action. To confirm, enter Y/y and enter. Any other characters cancel the operation.')
+        if confirmation != 'Y' or confirmation != 'n':
+            print('Database clearance cancelled.')
+        
+        # Proceed with clearing the database
+        connection = mysql.connector.connect(**self.db_config)
+        cursor = connection.cursor()
+
+        try:
+            # Get a list of all tables in the database
+            cursor.execute("SHOW TABLES")
+            tables = cursor.fetchall()
+
+            # Generate and execute DROP TABLE statements for each table
+            for table in tables:
+                table_name = table[0]
+                drop_table_query = f"DROP TABLE IF EXISTS {table_name}"
+                cursor.execute(drop_table_query)
+                print(f"Dropped table: {table_name}")
+
+            # Commit the changes
+            connection.commit()
+
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            # Close the cursor and connection
+            cursor.close()
+            connection.close()
+        
+    #################### END -> Delete from local ####################
     
     #################### START -> Querry tables ####################
     '''
@@ -245,6 +329,65 @@ class MySQLmanager:
         pass
     
     #################### END -> Querry tables ####################
+    
+    #################### START -> Parse and add to local ####################
+    
+    def parseAdd_TEST(self) -> None:
+        '''
+        TEST METHOD, DO NOT USE DURING PRODUCTION
+        Receives a string of data, which is the incoming serial flow from the sensoring module.
+        Parse the data and add it to the corresponding local database and tables.
+        '''
+        
+        if self.managerType != 'local_test':
+            raise ValueError('Local or cloud managers cannot alter test database. Create test manager to modify test_db.')
+        
+        # PARSING LOGIC MISSING, ADDING FROM TEST DATA FILE
+        # Read from /test_data.csv using Pandas
+        import pandas as pd
+        from mysql.connector import connect
+        from mysql.connector.connection import MySQLConnection
+        from mysql.connector.cursor import MySQLCursor
+        from databases.config import test_host, test_user, test_password, test_database
+        
+        df = pd.read_csv('../data/test_data.csv')
+
+        # Extract data for temperature, humidity, and light
+        temperature = df['temperature']
+        humidity = df['humidity']
+        light = df['light_percentage']
+        
+        # Establish connection to test_db
+        local_connection: MySQLConnection = connect(
+            host = test_host,
+            user = test_user,
+            password = test_password,
+            database = test_database
+        )
+        
+        local_cursor: MySQLCursor = local_connection.cursor()
+        print("Connected to test database!")
+        
+        # Recursively add data to test_db, simulating data entering from the incoming serial data
+        for row in df:
+            # Make a query
+            print()
+            
+        local_cursor.close()
+        local_connection.close()        
+    
+    def parseAdd(self, data:str) -> None:
+        '''
+        Receives a string of data, which is the incoming serial flow from the sensoring module.
+        Parse the data and add it to the corresponding local database and tables.
+        '''
+        
+        # PARSING LOGIC MISSING
+        pass
+    
+    #################### END -> Parse and add to local ####################
+    
+    #################### START -> Main functionality of manager ####################
     
     def receiver(self) -> None:
         '''
@@ -269,3 +412,5 @@ class MySQLmanager:
         
         # Get the the date and time range for the position data alert
         pass
+
+    #################### END-> Main functionality of manager ####################

@@ -3,6 +3,7 @@ import flet as ft
 from time import strftime, sleep
 
 from views.router import Router
+from other.nav_bar import NavBar
 
 
 def main(page: ft.Page) -> None:
@@ -48,36 +49,6 @@ def main(page: ft.Page) -> None:
         text_align = ft.TextAlign.CENTER
     )
 
-    # Navigation bar properties
-    page.navigation_bar = ft.NavigationBar(
-        destinations = [
-            # Home page button
-            ft.NavigationDestination(
-                label = "Home",
-                icon = ft.icons.HOME_OUTLINED,
-                selected_icon = ft.icons.HOME,
-            ),
-            # Week reports page button
-            ft.NavigationDestination(
-                label = "Weekly Rep.",
-                icon = ft.icons.DESCRIPTION_OUTLINED,
-                selected_icon = ft.icons.DESCRIPTION,
-            ),
-            # General reports page button
-            ft.NavigationDestination(
-                label = "General Rep.",
-                icon = ft.icons.COLLECTIONS_BOOKMARK_OUTLINED,
-                selected_icon = ft.icons.COLLECTIONS_BOOKMARK,
-            ),
-            # Analytics page button
-            ft.NavigationDestination(
-                label = "Analytics",
-                icon = ft.icons.QUERY_STATS,
-            )
-        ],
-        on_change = lambda _: router.redirect_to_page(_, _.control.selected_index)
-    )
-
     # Declares the router from the Router class to handle the navigation
     # between the pages.
     router: Router = Router(page, date_time)
@@ -90,6 +61,9 @@ def main(page: ft.Page) -> None:
 
     # Access to the app's home screen.
     page.go("/")
+
+    # Navigation bar properties
+    page.navigation_bar = NavBar.navigation_bar(router)
 
     # Updates the current date and time on the home page.
     current_date_time()

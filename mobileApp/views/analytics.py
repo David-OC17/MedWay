@@ -2,7 +2,6 @@
 import flet as ft
 
 from styles.s_analytics import SAnalytics
-from other.nav_bar import NavBar
 
 
 def Analytics(page: ft.Page) -> ft.Column:
@@ -20,9 +19,6 @@ def Analytics(page: ft.Page) -> ft.Column:
         - ft.Column: The analytics page.
     """
 
-    # Navigation bar
-    nav_bar: ft.Container = NavBar().nav_bar(page)
-
     # Title of the analytics page
     title: ft.Container = SAnalytics.title()
 
@@ -30,7 +26,6 @@ def Analytics(page: ft.Page) -> ft.Column:
     view: ft.Column = ft.Column(
         spacing = 25,
         # Composed by:
-        # - Navigation bar
         # - Title of the analytics page
         # - Analytics
         controls = [
@@ -38,8 +33,6 @@ def Analytics(page: ft.Page) -> ft.Column:
                 expand = True,
                 content = ft.Row(
                     controls = [
-                        # Navigation bar
-                        nav_bar,
                         # Container with the title of the analytics page
                         ft.Container(
                             expand = True,

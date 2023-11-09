@@ -2,7 +2,6 @@
 import flet as ft
 
 from styles.s_week_reports import SWeekReports
-from other.nav_bar import NavBar
 
 
 def WeekReports(page: ft.Page) -> ft.Column:
@@ -20,9 +19,6 @@ def WeekReports(page: ft.Page) -> ft.Column:
         - ft.Container: The week reports page.
     """
 
-    # Navigation bar
-    nav_bar: ft.Container = NavBar().nav_bar(page)
-
     # Title of the week reports page
     title: ft.Container = SWeekReports.title()
 
@@ -30,7 +26,6 @@ def WeekReports(page: ft.Page) -> ft.Column:
     view: ft.Column = ft.Column(
         spacing = 25,
         # Composed by:
-        # - Navigation bar
         # - Title of the week reports page
         # - Week reports
         controls = [
@@ -38,8 +33,6 @@ def WeekReports(page: ft.Page) -> ft.Column:
                 expand = True,
                 content = ft.Row(
                     controls = [
-                        # Navigation bar
-                        nav_bar,
                         # Container with the title of the week reports page
                         ft.Container(
                             expand = True,

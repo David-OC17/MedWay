@@ -28,7 +28,7 @@ class Router:
             expand = True
         )
 
-    
+
     def route_change(self, route: str) -> None:
         """
         Changes the current view of the app, based on the route passed in.
@@ -42,3 +42,25 @@ class Router:
 
         self.view.content = self.routes[route.route]
         self.page.update()
+
+
+    def redirect_to_page(self, _: ft.ControlEvent, selected_index: int) -> None:
+        """
+        Redirects the user to the selected page.
+
+        - Parameters:
+            - :param:`_` (ft.ControlEvent): The click event.
+            - :param:`selected_index` (int): The index of the selected page.
+
+        - Returns:
+            - No return value.
+        """
+
+        route_indices: dict[int, str] = {
+            0 : "/",
+            1 : "/week_reports",
+            2 : "/general_reports",
+            3 : "/analytics"
+        }
+
+        self.page.go(route_indices[selected_index])

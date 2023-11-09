@@ -48,25 +48,34 @@ def main(page: ft.Page) -> None:
         text_align = ft.TextAlign.CENTER
     )
 
+    # Navigation bar properties
     page.navigation_bar = ft.NavigationBar(
         destinations = [
+            # Home page button
             ft.NavigationDestination(
-                icon = ft.icons.HOME,
-                label = "Home ",
+                label = "Home",
+                icon = ft.icons.HOME_OUTLINED,
+                selected_icon = ft.icons.HOME,
             ),
+            # Week reports page button
             ft.NavigationDestination(
-                icon = ft.icons.DESCRIPTION,
-                label = "Weekly Reports",
+                label = "Weekly Rep.",
+                icon = ft.icons.DESCRIPTION_OUTLINED,
+                selected_icon = ft.icons.DESCRIPTION,
             ),
+            # General reports page button
             ft.NavigationDestination(
-                icon = ft.icons.COLLECTIONS_BOOKMARK,
-                label = "General Reports",
+                label = "General Rep.",
+                icon = ft.icons.COLLECTIONS_BOOKMARK_OUTLINED,
+                selected_icon = ft.icons.COLLECTIONS_BOOKMARK,
             ),
+            # Analytics page button
             ft.NavigationDestination(
-                icon = ft.icons.QUERY_STATS,
                 label = "Analytics",
+                icon = ft.icons.QUERY_STATS,
             )
-        ]
+        ],
+        on_change = lambda _: router.redirect_to_page(_, _.control.selected_index)
     )
 
     # Declares the router from the Router class to handle the navigation

@@ -2,7 +2,6 @@
 import flet as ft
 
 from styles.s_general_reports import SGeneralReports
-from other.nav_bar import NavBar
 
 
 def GeneralReports(page: ft.Page) -> ft.Column:
@@ -20,9 +19,6 @@ def GeneralReports(page: ft.Page) -> ft.Column:
         - ft.Column: The general reports page.
     """
 
-    # Navigation bar
-    nav_bar: ft.Container = NavBar().nav_bar(page)
-
     # Title of the general reports page
     title: ft.Container = SGeneralReports.title()
 
@@ -30,7 +26,6 @@ def GeneralReports(page: ft.Page) -> ft.Column:
     view: ft.Column = ft.Column(
         spacing = 25,
         # Composed by:
-        # - Navigation bar
         # - Title of the general reports page
         # - General reports
         controls = [
@@ -38,8 +33,6 @@ def GeneralReports(page: ft.Page) -> ft.Column:
                 expand = True,
                 content = ft.Row(
                     controls = [
-                        # Navigation bar
-                        nav_bar,
                         # Container with the title of the general reports page
                         ft.Container(
                             expand = True,

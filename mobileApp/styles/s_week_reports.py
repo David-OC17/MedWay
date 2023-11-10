@@ -25,39 +25,6 @@ class SWeekReports:
             - :return:`title_content` (ft.Container): Title of the week reports page.
         """
 
-        # Name of the company part 1 - MedWay
-        company_name_1: ft.Text = ft.Text(
-            "MedWay",
-            font_family = styles["name"]["font"],
-            size = styles["name"]["size"],
-            color = styles["name"]["color1"],
-            weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.CENTER
-        )
-
-        # Name of the company part 2 - Solutions
-        company_name_2: ft.Text = ft.Text(
-            "Solutions",
-            font_family = styles["name"]["font"],
-            size = styles["name"]["size"],
-            color = styles["name"]["color2"],
-            weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.CENTER,
-            offset = ft.Offset(0, -0.3)
-        )
-
-        # Name of the company
-        company_name: ft.Container = ft.Container(
-            alignment = ft.alignment.center,
-            content = ft.Column(
-                alignment = ft.MainAxisAlignment.CENTER,
-                controls = [
-                    company_name_1,
-                    company_name_2
-                ]
-            )
-        )
-
         # Title of the week reports page
         title: ft.Container = ft.Container(
             alignment = ft.alignment.center,
@@ -83,8 +50,6 @@ class SWeekReports:
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
-                    # Name of the company
-                    company_name,
                     # Title of the week reports page
                     title
                 ]

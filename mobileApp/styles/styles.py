@@ -67,12 +67,12 @@ class Styles:
                 "font" : "Roboto Bold",
                 "color1" : "#3A3E5F",
                 "color2" : "#0BA391",
-                "size" : 70,
+                "size" : 60,
             },
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
-                "size" : 70,
+                "size" : 40,
                 "height" : 175,
             }
         }
@@ -96,12 +96,12 @@ class Styles:
                 "font" : "Roboto Bold",
                 "color1" : "#3A3E5F",
                 "color2" : "#0BA391",
-                "size" : 70,
+                "size" : 60,
             },
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
-                "size" : 70,
+                "size" : 40,
                 "height" : 175,
             }
         }
@@ -125,41 +125,12 @@ class Styles:
                 "font" : "Roboto Bold",
                 "color1" : "#3A3E5F",
                 "color2" : "#0BA391",
-                "size" : 70,
+                "size" : 60,
             },
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
-                "size" : 70,
-                "height" : 175,
-            }
-        }
-
-        return analytics_styles_dict
-
-
-    def analytics_styles() -> dict[str]:
-        """
-        Styles for the analytics page components.
-
-        Parameters:
-            - Doesn't take any parameters.
-
-        Returns:
-            - :return:`analytics_styles_dict` (dict[str]): The styles for the analytics page components.
-        """
-
-        analytics_styles_dict: dict[str] = {
-            "name": {
-                "font" : "Roboto Bold",
-                "color1" : "#3A3E5F",
-                "color2" : "#0BA391",
-                "size" : 70,
-            },
-            "title" : {
-                "font" : "Roboto Bold",
-                "color" : "#3A3E5F",
-                "size" : 70,
+                "size" : 40,
                 "height" : 175,
             }
         }

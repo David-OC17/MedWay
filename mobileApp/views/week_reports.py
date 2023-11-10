@@ -31,8 +31,9 @@ def WeekReports(page: ft.Page) -> ft.Column:
         controls = [
             # Container with the title of the week reports page
             ft.Container(
+                border = ft.border.all( width = 2, color = "#FF0000"),
                 expand = True,
-                padding = ft.Padding(top = 35, bottom = 35, left = 25, right = 25),
+                padding = ft.Padding(top = 5, bottom =10, left = 25, right = 25),
                 alignment = ft.alignment.center,
                 content = ft.Column(
                     controls = [

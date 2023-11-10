@@ -24,7 +24,7 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
 
     # Properties of the home page
     view: ft.Column = ft.Column(
-        spacing = 25,
+        spacing = 0,
         # Composed by:
         # - Title of the home page
         # - Welcome message
@@ -35,13 +35,7 @@ def Home(page: ft.Page, date_time: ft.Text) -> ft.Column:
                     alignment = ft.MainAxisAlignment.CENTER,
                     controls = [
                         # Title of the home page
-                        ft.Row(
-                            alignment = ft.MainAxisAlignment.CENTER,
-                            controls = [
-                                # nav_bar,
-                                title
-                            ]
-                        )
+                        title
                     ]
                 )
             )

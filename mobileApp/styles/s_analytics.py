@@ -24,40 +24,6 @@ class SAnalytics:
         Returns:
             - :return:`title_content` (ft.Container): Title of the analytics page.
         """
-
-        # Name of the company part 1 - MedWay
-        company_name_1: ft.Text = ft.Text(
-            "MedWay",
-            font_family = styles["name"]["font"],
-            size = styles["name"]["size"],
-            color = styles["name"]["color1"],
-            weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.START
-        )
-
-        # Name of the company part 2 - Solutions
-        company_name_2: ft.Text = ft.Text(
-            "Solutions",
-            font_family = styles["name"]["font"],
-            size = styles["name"]["size"],
-            color = styles["name"]["color2"],
-            weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.START,
-            offset = ft.Offset(0, -0.3)
-        )
-
-        # Name of the company
-        company_name: ft.Container = ft.Container(
-            alignment = ft.alignment.center,
-            content = ft.Column(
-                alignment = ft.MainAxisAlignment.START,
-                controls = [
-                    company_name_1,
-                    company_name_2
-                ]
-            )
-        )
-
         # Title of the analytics page
         title: ft.Container = ft.Container(
             alignment = ft.alignment.center,
@@ -83,8 +49,6 @@ class SAnalytics:
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls = [
-                    # Name of the company
-                    company_name,
                     # Title of the analytics page
                     title
                 ]

@@ -19,26 +19,32 @@ def WeekReports(page: ft.Page) -> ft.Column:
         - ft.Container: The week reports page.
     """
 
-    # Title of the week reports page
+    # Title of the reports page
     title: ft.Container = SWeekReports.title()
 
-    # Properties of the week reports page
+   # Properties of the reports page
     view: ft.Column = ft.Column(
-        spacing = 10,
+        spacing = 25,
         # Composed by:
-        # - Title of the week reports page
-        # - Week reports
+        # - Title of the reports page
+        # - Reports
         controls = [
-            # Container with the title of the week reports page
             ft.Container(
-                border = ft.border.all( width = 2, color = "#FF0000"),
                 expand = True,
-                padding = ft.Padding(top = 5, bottom =10, left = 25, right = 25),
-                alignment = ft.alignment.center,
-                content = ft.Column(
+                content = ft.Row(
                     controls = [
-                        # Title of the week reports page
-                        title
+                        # Container with the title of the reports page
+                        ft.Container(
+                            expand = True,
+                            padding = ft.Padding(top = 50, bottom = 25, left = 35, right = 50),
+                            alignment = ft.alignment.center,
+                            content = ft.Column(
+                                controls = [
+                                    # Title of the reports page
+                                    title
+                                ]
+                            )
+                        )
                     ]
                 )
             )

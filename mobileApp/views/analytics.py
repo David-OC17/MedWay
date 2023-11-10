@@ -36,7 +36,7 @@ def Analytics(page: ft.Page) -> ft.Column:
                         # Container with the title of the analytics page
                         ft.Container(
                             expand = True,
-                            padding = ft.Padding(top = 25, bottom = 25, left = 35, right = 50),
+                            padding = ft.Padding(top = 50, bottom = 25, left = 35, right = 50),
                             alignment = ft.alignment.center,
                             content = ft.Column(
                                 controls = [

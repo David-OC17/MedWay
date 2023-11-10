@@ -63,12 +63,6 @@ class Styles:
         """
 
         week_reports_styles_dict: dict[str] = {
-            "name": {
-                "font" : "Roboto Bold",
-                "color1" : "#3A3E5F",
-                "color2" : "#0BA391",
-                "size" : 60,
-            },
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
@@ -92,12 +86,6 @@ class Styles:
         """
 
         general_reports_styles_dict: dict[str] = {
-            "name": {
-                "font" : "Roboto Bold",
-                "color1" : "#3A3E5F",
-                "color2" : "#0BA391",
-                "size" : 60,
-            },
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
@@ -121,12 +109,7 @@ class Styles:
         """
 
         analytics_styles_dict: dict[str] = {
-            "name": {
-                "font" : "Roboto Bold",
-                "color1" : "#3A3E5F",
-                "color2" : "#0BA391",
-                "size" : 60,
-            },
+
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",

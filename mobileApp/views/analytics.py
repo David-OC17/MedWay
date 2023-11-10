@@ -31,20 +31,12 @@ def Analytics(page: ft.Page) -> ft.Column:
         controls = [
             ft.Container(
                 expand = True,
-                content = ft.Row(
+                padding = ft.Padding(top = 20, bottom = 10, left = 25, right = 25),
+                alignment = ft.alignment.center,
+                content = ft.Column(
                     controls = [
-                        # Container with the title of the analytics page
-                        ft.Container(
-                            expand = True,
-                            padding = ft.Padding(top = 50, bottom = 25, left = 35, right = 50),
-                            alignment = ft.alignment.center,
-                            content = ft.Column(
-                                controls = [
-                                    # Title of the analytics page
-                                    title
-                                ]
-                            )
-                        )
+                        # Title of the analytics page
+                        title
                     ]
                 )
             )

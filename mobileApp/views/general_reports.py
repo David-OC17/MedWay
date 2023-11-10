@@ -24,29 +24,22 @@ def GeneralReports(page: ft.Page) -> ft.Column:
 
     # Properties of the general reports
     view: ft.Column = ft.Column(
-        spacing = 25,
+        spacing = 10,
         # Composed by:
         # - Title of the general reports
         # - General reports
         controls = [
             ft.Container(
                 expand = True,
-                content = ft.Row(
+                padding = ft.Padding(top = 20, bottom = 10, left = 25, right = 25),
+                alignment = ft.alignment.center,
+                content = ft.Column(
                     controls = [
-                        # Container with the title of the general reports
-                        ft.Container(
-                            expand = True,
-                            padding = ft.Padding(top = 55, bottom = 25, left = 35, right = 50),
-                            alignment = ft.alignment.center,
-                            content = ft.Column(
-                                controls = [
-                                    # Title of the general reports
-                                    title
-                                ]
-                            )
-                        )
+                        # Title of the general reports
+                        title
                     ]
                 )
+                    
             )
         ]
     )

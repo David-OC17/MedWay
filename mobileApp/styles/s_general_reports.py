@@ -46,8 +46,9 @@ class SGeneralReports:
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
+            offset = ft.Offset(0,-0.1),
             content = ft.Column(
-                alignment = ft.MainAxisAlignment.NONE,
+                alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
                     # Title of the general reports page
                     title

@@ -32,7 +32,7 @@ class SWeekReports:
             size = styles["name"]["size"],
             color = styles["name"]["color1"],
             weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.START
+            text_align = ft.TextAlign.CENTER
         )
 
         # Name of the company part 2 - Solutions
@@ -42,7 +42,7 @@ class SWeekReports:
             size = styles["name"]["size"],
             color = styles["name"]["color2"],
             weight = ft.FontWeight.BOLD,
-            text_align = ft.TextAlign.START,
+            text_align = ft.TextAlign.CENTER,
             offset = ft.Offset(0, -0.3)
         )
 
@@ -50,7 +50,7 @@ class SWeekReports:
         company_name: ft.Container = ft.Container(
             alignment = ft.alignment.center,
             content = ft.Column(
-                alignment = ft.MainAxisAlignment.START,
+                alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
                     company_name_1,
                     company_name_2
@@ -80,8 +80,8 @@ class SWeekReports:
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
-            content = ft.Row(
-                alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+            content = ft.Column(
+                alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
                     # Name of the company
                     company_name,

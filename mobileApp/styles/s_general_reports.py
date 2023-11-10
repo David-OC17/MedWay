@@ -80,7 +80,7 @@ class SGeneralReports:
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
-            content = ft.Row(
+            content = ft.Column(
                 alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls = [
                     # Name of the company

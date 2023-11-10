@@ -24,27 +24,20 @@ def WeekReports(page: ft.Page) -> ft.Column:
 
     # Properties of the week reports page
     view: ft.Column = ft.Column(
-        spacing = 25,
+        spacing = 10,
         # Composed by:
         # - Title of the week reports page
         # - Week reports
         controls = [
+            # Container with the title of the week reports page
             ft.Container(
                 expand = True,
-                content = ft.Row(
+                padding = ft.Padding(top = 35, bottom = 35, left = 25, right = 25),
+                alignment = ft.alignment.center,
+                content = ft.Column(
                     controls = [
-                        # Container with the title of the week reports page
-                        ft.Container(
-                            expand = True,
-                            padding = ft.Padding(top = 25, bottom = 25, left = 35, right = 50),
-                            alignment = ft.alignment.center,
-                            content = ft.Column(
-                                controls = [
-                                    # Title of the week reports page
-                                    title
-                                ]
-                            )
-                        )
+                        # Title of the week reports page
+                        title
                     ]
                 )
             )

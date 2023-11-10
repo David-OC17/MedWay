@@ -17,8 +17,10 @@ or 'aws' option for a cloud database manager.
 
 import mysql.connector
 from mysql.connector import Error
-from datetime import date
-from .allQuerryResult import QuerryResult
+from datetime import date, datetime
+from time import strftime
+from allQueryResult import QueryResult
+import pandas as pd
 
 from .config import *
 '''
@@ -209,12 +211,33 @@ class MySQLmanager:
                 cursor.close()
                 connection.close()
     
-    def pushBatchAlerts(self, startAlertNum: int, endAlertNum: int)-> None:
+    def pushBatchAlerts(self, starID: int, endID: int)-> None:
         '''
         Takes data from local batch alerts data table from startID to endID and pushes it to the cloud.
         Returns if upload was successful.
         '''
-        pass
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            cursor = connection.cursor()
+            
+            # Define the INSERT INTO query
+            insert_query = """
+            INSERT INTO batch_alerts (alert_number, batch_number, temperature_alert, humidity_alert, light_percentage_alert)
+            VALUES (%s, %s, %s, %s, %s);
+            """
+            
+            # Execute the query with data_list as a list of tuples
+            data_list = self.fetch_data_from_database(starID, endID)
+            cursor.executemany(insert_query, data_list)
+            
+            connection.commit()
+            print("Records inserted successfully.")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
     
     #################### END -> Push to cloud ####################
     
@@ -316,19 +339,77 @@ class MySQLmanager:
         
     #################### END -> Delete from local ####################
     
-    #################### START -> Querry tables ####################
+    #################### START -> query tables ####################
     '''
     Provides the ability to query all tables all at once for a given date range or batch number.
     '''
     
-    def querryAllByDate(self, startDate:date, endDate:date):
+    def queryAllByDate(self, startDate:date, endDate:date) -> QueryResult:
         '''
-        Querry cloud database for all the data corresponding to the given dates.
-        Return a class QuerryResult with numpy arrays with the information.
+        query cloud database for all the data corresponding to the given dates.
+        Return a class queryResult with numpy arrays with the information.
         '''
-        pass
+        if self.managerType != 'cloud':
+            raise ValueError('Only cloud manager can interact with RDS cloud. Create a cloud manager to access.')
+
+        
+        # The function connect to the cloud and makes two queries, one for the sensor data table and one for the batch alerts table
+        # It generates a QueryResult type where it stores the query result
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            cursor = connection.cursor()
+            
+            # Convert startDate and endDate to MySQL type for query
+            startDate = datetime.strptime(startDate, "%d%b%Y")
+            mysql_startDate = startDate.strftime("%Y-%m-%d")
+            
+            endDate = datetime.strptime(endDate, "%d%b%Y")
+            mysql_endDate = startDate.strftime("%Y-%m-%d")
+            
+            
+            # Define query where date between startDate and endDate
+            select_query = f"SELECT * FROM batch_alerts WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
+                              
+            cursor.execute(select_query)
+            
+            '''
+            self.sensor_data_dtype =  np.dtype([
+                ('ID', np.int64),
+                ('batch_number', np.int64),
+                ('device_number', np.int64),
+                ('date', 'datetime64[D]'),  # Using datetime64[D] for date
+                ('temperature', np.float64),
+                ('humidity', np.float64),
+                ('light_percentage', np.float64),
+                ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
+                ('x_coordinate', np.float64),
+                ('y_coordinate', np.float64)
+            ])
+            
+            self.batch_alerts_dtype = np.dtype([
+                ('alert_number', np.int64),
+                ('batch_number', np.int64),
+                ('temperature_alert', np.bool_),
+                ('humidity_alert', np.bool_),
+                ('light_alert', np.bool_)
+            ])
+            '''
+            
+            sensor_data_df = pd.DataFrame(cursor.fetchall())
+            
+            # Get the IDs that we need to query from the batch_alerts based on which where present in the last query
+        
+            
+            result = QueryResult()
+ 
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
     
-    #################### END -> Querry tables ####################
+    #################### END -> query tables ####################
     
     #################### START -> Parse and add to local ####################
     
@@ -396,14 +477,16 @@ class MySQLmanager:
         if self.managerType != 'local':
             raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
         # Receive incoming data stream
+        
         # Parse data stream
+        
         # Check for data alerts to be sent to corresponding database
+        
         # Send to local database
         
-    def sender(self) -> bool:
+    def sender(self) -> None:
         '''
         Calls push data functions to upload local batch to the cloud.
-        Returns if uploads were successful.
         '''
         # Since the local database is constantly changing we should determine a range to push and upload that, since pushing 'all' could cause problems
         # Get the ID range to push the sensor data

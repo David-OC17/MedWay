@@ -25,12 +25,12 @@ class RandomDataGenerator:
         light_percentage -> (0% - 15%)
         """
 
-        with open("../data/test_data.csv", "a") as file:
+        with open("../data/sensor_data.csv", "a") as file:
             # Create writer object
             writer = csv.writer(file)
 
             # Get last ID, if file is empty, set last ID to 0
-            with open("../data/test_data.csv", "r") as file:
+            with open("../data/sensor_data.csv", "r") as file:
                 try:
                     last_line: str = file.readlines()[-2]
                     last_id: int = int(last_line[0:last_line.find(",")])

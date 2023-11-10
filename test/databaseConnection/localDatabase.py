@@ -10,7 +10,7 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 from databases.config import *
 # Try the database managers
-from databases.MySQLcloudManager import *
+from databases.MySQLmanager import *
 
 def main():
     # As a prerequisite, create 'test_db' in your local MySQL configuration

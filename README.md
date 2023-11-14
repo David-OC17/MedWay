@@ -3,6 +3,11 @@ MedWay: An IoT system for tracking medicines and vaccines from production to use
 
 ## Quickstar guide
 
+The project depends on several things...
+MySQL
+PDFlatex
+Python3 (and the packages listed in requirements.txt)
+
 Somethings to introduce the new user...
 
 Download [MySQL](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04) for local server.

@@ -10,32 +10,78 @@ class RandomDataGenerator:
     def __init__(self):
         print('Data generator created.')
         
-    def replaceSome(numData:int, light:list[np.float64], humidity: list[np.float64], temperature: list[np.float64], percentageReplace:float) -> list[np.float64]:
+    def replaceSome(self, light:list[np.float64], humidity: list[np.float64], temperature: list[np.float64], percentageReplace:float) -> tuple[list[np.float64], list[np.float64], list[np.float64], list[bool]]:
         '''
         Receives a data list for light percentage and replaces a percentage of the values for values that are outside the original range,
-        generating some data that triggers the 
+        generating some data that represents the medicine going out of the recommended state for preservation.
+        At the end of each line, add another column that is if the batch suffered any irregularity, which will be all true for
+        the altered rows.
+        Returns all the lists that it got plus the status, contained in a tuple.
         '''
+        
+        '''
+        Steps of the operation:
+        1. Define new ranges for the values
+        2. Define which values to change from what is available
+        3. Do the replacement
+        4. Add the appropriate value to the state column (used for training the model)
+        5. Return all the modified parameters
+        '''
+        
+        # Verify that the length of the lists is the same for all 
+        assert(len(light) == len(humidity))
+        assert(len(light) == len(temperature))
 
+        numData = len(light)
+        
         # Define the original range and the new range
-        new_light_range = (20, 30)
+        new_light_range = (70, 90)
         new_humidity_range = (70, 100)
         new_temperature_range = (6, 10)
 
         # Choose <percentage>% of the indices randomly
-        # Use the same indexes for temperature and humidty, but different for light
-        num_elements_to_change_light = int(percentageReplace * numData)
-        indices_to_change = np.random.choice(numData, num_elements_to_change_light, replace=False)
+        # Use the same indexes for temperature and humidity, but different for light
+        randomIncrease_light = np.random.uniform(low=0.05, high=0.3)
+        randomIncrease_humidity = np.random.uniform(low=0.05, high=0.3)
+        randomIncrease_temperature = np.random.uniform(low=0.05, high=0.3)
         
+        num_elements_to_change_light = int((percentageReplace + randomIncrease_light)* numData)
+        num_elements_to_change_humidity = int((percentageReplace + randomIncrease_humidity) * numData)
+        num_elements_to_change_temperature = int((percentageReplace + randomIncrease_temperature) * numData)
+        
+        indices_to_change_light = np.random.choice(numData, num_elements_to_change_light, replace=False)
+        indices_to_change_humidity = np.random.choice(numData, num_elements_to_change_light, replace=False)
+        indices_to_change_temperature = np.random.choice(numData, num_elements_to_change_light, replace=False)
+        
+        
+        # Print for debugging
+        # print('Elements to change: ', num_elements_to_change_humidity)
+        # print('Indices to change: ', indices_to_change_humidity)
+        # print('Num indices: ', len(indices_to_change_humidity))
         
         
         # Add to the batch_alerts.csv file
-
         # Adjust the values at the selected indices to the new range
-        light[indices_to_change] = np.random.uniform(new_light_range[0], new_light_range[1], num_elements_to_change)
-        humidity[indices_to_change] = np.random.uniform(new_light_range[0], new_light_range[1], num_elements_to_change)
-        temperature[indices_to_change] = np.random.uniform(new_light_range[0], new_light_range[1], num_elements_to_change)
-    
+        for idx in indices_to_change_light:
+            light[idx] = np.random.uniform(low=new_light_range[0], high=new_light_range[1])
+        
+        for idx in indices_to_change_light:
+            humidity[idx] = np.random.uniform(low=new_humidity_range[0], high=new_humidity_range[1])
+            
+        for idx in indices_to_change_light:
+            temperature[idx] = np.random.uniform(low=new_temperature_range[0], high=new_temperature_range[1])
 
+        # Create the 'state' of the medicine list and populate it accordingly
+        # The list is of the same size as any of the other lists, and will have a value of true if the index is inside modifiedIndexes
+        
+        allModifiedIndexes = set(indices_to_change_light + indices_to_change_humidity + indices_to_change_temperature)
+        modifiedIndexes = list(allModifiedIndexes)
+        
+        state = [idx in modifiedIndexes for idx in range(numData)]
+        
+        # Return the tuple of all the modified lists and the new state for the row
+        return light, humidity, temperature, state
+    
     def generator(self, numData:int) -> None:
         """
         Generates random data for humidity and returns it in a .csv file
@@ -62,7 +108,7 @@ class RandomDataGenerator:
                     last_id: int = int(last_line[0:last_line.find(",")])
                 except IndexError:
                     #Add title to the .csv file
-                    header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
+                    header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage", "state"]
                     writer.writerow(header)
                     last_id: int = 0
 
@@ -73,21 +119,32 @@ class RandomDataGenerator:
             humidity: list[np.float64] = ((70 - 50) * np.random.random((1, numData)) + 50).tolist()[0]
             light_percentage: list[np.float64] = (15 * np.random.random_sample((1, numData))).tolist()[0]
             
-            # Check which values in the temperature, humity or light percentage are over the accepted 
+            # Check which values in the temperature, humidity or light percentage are over the accepted 
             #   limit and generate a line for the batch alerts if so
-            #self.replaceSome(temperature, humidity, light_percentage)
+            modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.3)
+            # light --> 0, humidity --> 1, temperature --> 2, list[bool] --> 3
             
             # Write data to file
             for idx in range(numData):
                 date: str = strftime("%d/%b/%Y %H:%M:%S")
+                # row: tuple = (
+                #     last_id + 1,
+                #     batch_number[idx],
+                #     device_number[idx],
+                #     date,
+                #     temperature[idx],
+                #     humidity[idx],
+                #     light_percentage[idx]
+                # )
                 row: tuple = (
                     last_id + 1,
                     batch_number[idx],
                     device_number[idx],
                     date,
-                    temperature[idx],
-                    humidity[idx],
-                    light_percentage[idx]
+                    modified[2][idx],
+                    modified[1][idx],
+                    modified[0][idx],
+                    not modified[3][idx]
                 )
                 writer.writerow(row)
                 last_id += 1

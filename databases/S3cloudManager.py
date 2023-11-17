@@ -48,3 +48,19 @@ class S3manager:
         pass
     
     #################### END -> Download files ####################
+    
+    
+    '''
+    import boto3
+
+    s3_client = boto3.client('s3')
+
+    # we need the bucket name
+
+    s3 = boto3.resource("s3")
+    s3.Bucket(bucket_name).put_object() # put the result report into the bucket
+    # .put_object(key = key_name, Body = report )
+
+    # configure accessible to other elements in AWS
+        
+    '''

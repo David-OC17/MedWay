@@ -75,7 +75,7 @@ class RandomDataGenerator:
             
             # Check which values in the temperature, humity or light percentage are over the accepted 
             #   limit and generate a line for the batch alerts if so
-            self.replaceSome(temperature, humidity, light_percentage)
+            #self.replaceSome(temperature, humidity, light_percentage)
             
             # Write data to file
             for idx in range(numData):

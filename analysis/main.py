@@ -12,10 +12,9 @@ from stateAnalysis import analyzeState, trainAnalyzeState
 from reportGenerator import generatePDF
 
 if __name__ == '__main__':
-    # Selelect the period of the analysis
+    # Select the period of the analysis
     # Options:
     # D -> Daily
-    # W -> Weekly
     # M -> Monthly
     
     # Train the model for a daily basis
@@ -27,5 +26,5 @@ if __name__ == '__main__':
     # Generate the report from the results of the last analysis
     generatePDF('D')
     
-    # Send the last .pdf report to the S3 bucket of its appropiate type
+    # Send the last .pdf report to the S3 bucket of its appropriate type
 

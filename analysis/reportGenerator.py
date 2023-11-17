@@ -8,6 +8,6 @@ Save the reports into the `reports` folder.
 
 def generatePDF(period:str) -> None:
     '''
-    Takes the appropiate template, adds the dynamic data, compiles into a `.pdf` document.
+    Takes the appropriate template, adds the dynamic data, compiles into a `.pdf` document.
     '''
     pass

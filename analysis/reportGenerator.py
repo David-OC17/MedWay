@@ -6,8 +6,19 @@ Take default images and take new graphs from the `images` directory.
 Save the reports into the `reports` folder.
 '''
 
-def generatePDF(period:str) -> None:
+import seaborn
+import pandas as pd
+
+def conditionStatistics() -> tuple:
+    '''
+    Reads the appropriate file, creates the plots for the report and calculates the 
+    '''
+    pass
+
+def generatePDF(alertCount:int, numBatches:int, goodBatches:int, badBatches:int, startDate, endDate) -> None:
     '''
     Takes the appropriate template, adds the dynamic data, compiles into a `.pdf` document.
     '''
+    
+    
     pass

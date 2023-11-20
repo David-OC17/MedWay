@@ -82,9 +82,11 @@ class RandomDataGenerator:
         # Return the tuple of all the modified lists and the new state for the row
         return light, humidity, temperature, state
     
-    def generator(self, numData:int) -> None:
+    def generator(self, numData:int, numBatches:int, withLabels:bool = False) -> None:
         """
-        Generates random data for humidity and returns it in a .csv file
+        Generates random data for humidity and returns it in a .csv file.
+        Generates numData * numBatches rows of information.
+        Select if to generate the data with or without labels via the withLabels parameter (true -> include labels).
         """
 
         """
@@ -96,57 +98,79 @@ class RandomDataGenerator:
         humidity -> 1000 random readings (50% - 70%)(sometimes going to 100%)
         light_percentage -> (0% - 15%)(sometimes going over and to 20%)
         """
-
-        with open("../data/sensor_data.csv", "a") as file:
+        
+        # Select the appropriate values for including labels or not (default to false)
+        if withLabels:
+            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage", "state"]
+            pathToFile = "../data/sensor_data_train.csv"
+        else:
+            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
+            pathToFile = "../data/sensor_data.csv"
+            
+        
+        # Create some batch numbers at random
+        this_batch_numbers: list[int] = np.random.randint(1000, 100000 + 1, numBatches).tolist()
+        
+        with open(pathToFile, "a") as file:
             # Create writer object
-            writer = csv.writer(file)
+            writer = csv.writer(file, lineterminator='\n')
 
             # Get last ID, if file is empty, set last ID to 0
-            with open("../data/sensor_data.csv", "r") as file:
+            with open(pathToFile, "r") as file:
                 try:
                     last_line: str = file.readlines()[-2]
                     last_id: int = int(last_line[0:last_line.find(",")])
                 except IndexError:
                     #Add title to the .csv file
-                    header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage", "state"]
                     writer.writerow(header)
                     last_id: int = 0
 
-            # Generate random data
-            batch_number: list[np.int64] = np.full((1, numData), 195251).tolist()[0]
-            device_number: list[np.int64] = np.full((1, numData), 729864).tolist()[0]
-            temperature: list[np.float64] = (6 * np.random.random_sample((1, numData))).tolist()[0]
-            humidity: list[np.float64] = ((70 - 50) * np.random.random((1, numData)) + 50).tolist()[0]
-            light_percentage: list[np.float64] = (15 * np.random.random_sample((1, numData))).tolist()[0]
-            
-            # Check which values in the temperature, humidity or light percentage are over the accepted 
-            #   limit and generate a line for the batch alerts if so
-            modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.3)
-            # light --> 0, humidity --> 1, temperature --> 2, list[bool] --> 3
-            
-            # Write data to file
-            for idx in range(numData):
-                date: str = strftime("%d/%b/%Y %H:%M:%S")
-                # row: tuple = (
-                #     last_id + 1,
-                #     batch_number[idx],
-                #     device_number[idx],
-                #     date,
-                #     temperature[idx],
-                #     humidity[idx],
-                #     light_percentage[idx]
-                # )
-                row: tuple = (
-                    last_id + 1,
-                    batch_number[idx],
-                    device_number[idx],
-                    date,
-                    modified[2][idx],
-                    modified[1][idx],
-                    modified[0][idx],
-                    not modified[3][idx]
-                )
-                writer.writerow(row)
-                last_id += 1
+
+            # Write several data rows for each batch number
+            for this_batch_number in this_batch_numbers:
+                # Generate random data
+                batch_number: list[np.int64] = np.full((1, numData), this_batch_number).tolist()[0]
+                device_number: list[np.int64] = np.full((1, numData), 729864).tolist()[0]
+                temperature: list[np.float64] = (6 * np.random.random_sample((1, numData))).tolist()[0]
+                humidity: list[np.float64] = ((70 - 50) * np.random.random((1, numData)) + 50).tolist()[0]
+                light_percentage: list[np.float64] = (15 * np.random.random_sample((1, numData))).tolist()[0]
+                
+                # Check which values in the temperature, humidity or light percentage are over the accepted 
+                #   limit and generate a line for the batch alerts if so
+                # light --> 0, humidity --> 1, temperature --> 2, list[bool] --> 3
+                if withLabels:
+                    modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.15)
+                
+                    # Write data to file
+                    for idx in range(numData):
+                        date: str = strftime("%d/%b/%Y %H:%M:%S")
+                        row: tuple = (
+                            last_id + 1,
+                            batch_number[idx],
+                            device_number[idx],
+                            date,
+                            modified[2][idx],
+                            modified[1][idx],
+                            modified[0][idx],
+                            not modified[3][idx]
+                        )
+                        writer.writerow(row)
+                        last_id += 1
+                
+                else:                
+                    # Write data to file
+                    for idx in range(numData):
+                        date: str = strftime("%d/%b/%Y %H:%M:%S")
+                        row: tuple = (
+                            last_id + 1,
+                            batch_number[idx],
+                            device_number[idx],
+                            date,
+                            temperature[idx],
+                            humidity[idx],
+                            light_percentage[idx]
+                        )
+                        writer.writerow(row)
+                        last_id += 1
 
         file.close()

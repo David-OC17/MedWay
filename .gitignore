@@ -3,6 +3,7 @@
 /databases/config.py
 /test/databaseConnection/config.py
 /test/data/sensor_data.csv
+/test/data/sensor_data_train.csv
 /analysis/reports/dailyReportTemplate.log
 /analysis/reports/dailyReportTemplate.aux
 /analysis/reports/dailyReportTemplate.out

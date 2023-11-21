@@ -103,8 +103,8 @@ def analyzeState(testing:bool=False) -> tuple:
     # ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
     
     # Get the date beginning and end, then drop date
-    startDate = analysisData.head(1)["date"]
-    endDate = analysisData.tail(1)["date"]
+    # startDate = analysisData.head(1)["date"]
+    # endDate = analysisData.tail(1)["date"]
     analysisData = data.drop(columns=["date"], inplace=False)
     
     grouped = analysisData.groupby('batch_number')
@@ -141,4 +141,4 @@ def analyzeState(testing:bool=False) -> tuple:
     numBatches = len(groups)
     
     # Return all the statistics for the report to be generated
-    return (alertCount, numBatches, goodBatches, badBatches, startDate, endDate)
+    return (alertCount, numBatches, goodBatches, badBatches, groups)

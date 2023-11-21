@@ -139,7 +139,7 @@ class RandomDataGenerator:
                 #   limit and generate a line for the batch alerts if so
                 # light --> 0, humidity --> 1, temperature --> 2, list[bool] --> 3
                 if withLabels:
-                    modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.15)
+                    modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.05)
                 
                     # Write data to file
                     for idx in range(numData):

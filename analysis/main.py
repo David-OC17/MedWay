@@ -22,7 +22,7 @@ if __name__ == '__main__':
     results = analyzeState(testing=True)
     for item in results:
         print(type(item))
-        
+    
     # Generate the report from the results of the last analysis
     #generatePDF()
     

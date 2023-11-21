@@ -1,6 +1,5 @@
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 
 import pandas as pd
 import pickle
@@ -43,6 +42,7 @@ def trainAnalyzeState(testing:bool=False) -> None:
     model.fit(X_train, y_train)
 
     ############### Make predictions in order to test the model ###############
+    # from sklearn.metrics import accuracy_score
     # Make predictions on the test set
     # y_pred = model.predict(X_test)
 

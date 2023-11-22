@@ -5,24 +5,24 @@ from styles.styles import Styles
 
 
 # Style properties for the week reports page
-styles: dict[str] = Styles.general_reports_styles()
+styles: dict[str] = Styles.daily_reports_styles()
 
 
-class SGeneralReports:
+class SDailyReports:
     """
-    Properties of the controls used by the function :function:`GeneralReports`
-    from the :file:`general_reports.py` for creating the general reports page.
+    Properties of the controls used by the function :function:`DailyReports`
+    from the :file:`daily_reports.py` for creating the week reports page.
     """
 
     def title() -> ft.Container:
         """
-        Title of the general reports page.
-
+        Title of the week reports page.
+        
         Parameters:
             - Doesn't take any parameters.
 
         Returns:
-            - :return:`title_content` (ft.Container): Title of the general reports page.
+            - :return:`title_content` (ft.Container): Title of the week reports page.
         """
 
         # Name of the company part 1 - MedWay
@@ -58,14 +58,14 @@ class SGeneralReports:
             )
         )
 
-        # Title of the general reports page
+        # Title of the daily reports page
         title: ft.Container = ft.Container(
             alignment = ft.alignment.center,
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
                     ft.Text(
-                        "General Reports",
+                        "Daily Reports",
                         font_family = styles["title"]["font"],
                         size = styles["title"]["size"],
                         color = styles["title"]["color"],
@@ -76,7 +76,7 @@ class SGeneralReports:
             )
         )
 
-        # Container with the title of the general reports page
+        # Content for the company name and the title of the daily reports page
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
@@ -85,7 +85,7 @@ class SGeneralReports:
                 controls = [
                     # Name of the company
                     company_name,
-                    # Title of the general reports page
+                    # Title of the daily reports page
                     title
                 ]
             )

@@ -61,9 +61,9 @@ class Styles:
         return home_styles_dict
 
 
-    def week_reports_styles() -> dict[str]:
+    def daily_reports_styles() -> dict[str]:
         """
-        Styles for the week reports page components.
+        Styles for the daily reports page components.
 
         Parameters:
             - Doesn't take any parameters.
@@ -72,7 +72,7 @@ class Styles:
             - :return:`week_reports_styles_dict` (dict[str]): The styles for the week reports page components.
         """
 
-        week_reports_styles_dict: dict[str] = {
+        daily_reports_styles_dict: dict[str] = {
             "name": {
                 "font" : "Roboto Bold",
                 "color1" : "#3A3E5F",
@@ -87,12 +87,12 @@ class Styles:
             }
         }
 
-        return week_reports_styles_dict
+        return daily_reports_styles_dict
 
 
-    def general_reports_styles() -> dict[str]:
+    def monthly_reports_styles() -> dict[str]:
         """
-        Styles for the general reports page components.
+        Styles for the monthly reports page components.
 
         Parameters:
             - Doesn't take any parameters.
@@ -101,7 +101,7 @@ class Styles:
             - :return:`general_reports_styles_dict` (dict[str]): The styles for the general reports page components.
         """
 
-        general_reports_styles_dict: dict[str] = {
+        monthly_reports_styles_dict: dict[str] = {
             "name": {
                 "font" : "Roboto Bold",
                 "color1" : "#3A3E5F",
@@ -116,7 +116,7 @@ class Styles:
             }
         }
 
-        return general_reports_styles_dict
+        return monthly_reports_styles_dict
 
 
     def analytics_styles() -> dict[str]:

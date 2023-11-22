@@ -1,38 +1,38 @@
 
 import flet as ft
 
-from styles.s_general_reports import SGeneralReports
+from styles.s_daily_reports import SDailyReports
 from other.nav_bar import NavBar
 
 
-def GeneralReports(page: ft.Page) -> ft.Column:
+def DailyReports(page: ft.Page) -> ft.Column:
     """
-    General reports page of the app.
+    Daily reports page of the app.
 
-    Shows the company name, the title of the page, navigation bar, and the general reports.
+    Shows the company name, the title of the page, navigation bar, and the week reports.
 
-    Uses the controls defined in the class :class:`SGeneralReports` from the file :file:`s_general_reports.py`
+    Uses the controls defined in the class :class:`SDailyReports` from the file :file:`s_daily_reports.py`
 
     - Parameters:
-        - page (ft.Page): The page to add the general reports page to.
+        - page (ft.Page): The page to add the week reports page to.
 
     - Returns:
-        - ft.Column: The general reports page.
+        - ft.Container: The week reports page.
     """
 
     # Navigation bar
     nav_bar: ft.Container = NavBar().nav_bar(page)
 
-    # Title of the general reports page
-    title: ft.Container = SGeneralReports.title()
+    # Title of the week reports page
+    title: ft.Container = SDailyReports.title()
 
-    # Properties of the general reports page
+    # Properties of the week reports page
     view: ft.Column = ft.Column(
         spacing = 25,
         # Composed by:
         # - Navigation bar
-        # - Title of the general reports page
-        # - General reports
+        # - Title of the week reports page
+        # - Week reports
         controls = [
             ft.Container(
                 expand = True,
@@ -40,14 +40,14 @@ def GeneralReports(page: ft.Page) -> ft.Column:
                     controls = [
                         # Navigation bar
                         nav_bar,
-                        # Container with the title of the general reports page
+                        # Container with the title of the week reports page
                         ft.Container(
                             expand = True,
                             padding = ft.Padding(top = 25, bottom = 25, left = 35, right = 50),
                             alignment = ft.alignment.center,
                             content = ft.Column(
                                 controls = [
-                                    # Title of the general reports page
+                                    # Title of the week reports page
                                     title
                                 ]
                             )

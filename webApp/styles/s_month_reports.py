@@ -5,24 +5,24 @@ from styles.styles import Styles
 
 
 # Style properties for the week reports page
-styles: dict[str] = Styles.week_reports_styles()
+styles: dict[str] = Styles.monthly_reports_styles()
 
 
-class SWeekReports:
+class SMonthReports:
     """
-    Properties of the controls used by the function :function:`WeekReports`
-    from the :file:`week_reports.py` for creating the week reports page.
+    Properties of the controls used by the function :function:`MonthReports`
+    from the :file:`month_reports.py` for creating the general reports page.
     """
 
     def title() -> ft.Container:
         """
-        Title of the week reports page.
-        
+        Title of the month reports page.
+
         Parameters:
             - Doesn't take any parameters.
 
         Returns:
-            - :return:`title_content` (ft.Container): Title of the week reports page.
+            - :return:`title_content` (ft.Container): Title of the general reports page.
         """
 
         # Name of the company part 1 - MedWay
@@ -58,14 +58,14 @@ class SWeekReports:
             )
         )
 
-        # Title of the week reports page
+        # Title of the month reports page
         title: ft.Container = ft.Container(
             alignment = ft.alignment.center,
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
                 controls = [
                     ft.Text(
-                        "Weekly Reports",
+                        "Monthly Reports",
                         font_family = styles["title"]["font"],
                         size = styles["title"]["size"],
                         color = styles["title"]["color"],
@@ -76,7 +76,7 @@ class SWeekReports:
             )
         )
 
-        # Content for the company name and the title of the week reports page
+        # Container with the title of the month reports page
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
@@ -85,7 +85,7 @@ class SWeekReports:
                 controls = [
                     # Name of the company
                     company_name,
-                    # Title of the week reports page
+                    # Title of the month reports page
                     title
                 ]
             )

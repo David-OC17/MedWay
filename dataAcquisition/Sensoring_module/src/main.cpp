@@ -8,7 +8,11 @@
 #define DHT_PIN 4
 #define DHTTYPE DHT22
 #define MPU_INTERRUPT_PIN 27
-
+#define EN_LED 0
+#define RED 27
+#define GREEN 14
+#define BLUE 12
+ 
 // Constants
 const int time2send = 3000;
 const int time2sample_dht = 1000;
@@ -41,7 +45,9 @@ VectorInt16 aa;     // Raw acceleration from the sensor
 VectorInt16 aaReal;
 VectorFloat gravity;
 float ypr[3];       // Yaw, Pitch, Roll
-float real_ypr[3];
+float average_array[50];
+float mean_accel;
+uint8_t accel_count;
 
 // Time management
 unsigned long time_aux = 0;
@@ -63,6 +69,16 @@ void setup() {
 
   // DHT temperature sensor
   dht.begin();
+
+  // Enable LEDS
+  pinMode(EN_LED, OUTPUT);
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+
+  analogWrite(BLUE, 255);
+  analogWrite(RED, 0);
+  analogWrite(GREEN, 0);
 
   // MPU and DMP init
   Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
@@ -86,9 +102,16 @@ void setup() {
     
     packet_size = mpu.dmpGetFIFOPacketSize();  // Expected packet size for dmp
 
+    analogWrite(RED, 0);
+    analogWrite(GREEN, 255);
+    analogWrite(BLUE, 0);
+    
   }else{
     // Error: 1 = Initial memory load failed, 2 = DMP configuration updates failed
     Serial.println("DMP config failed with code " + String(device_status));
+    analogWrite(RED, 255);
+    analogWrite(GREEN, 0);
+    analogWrite(BLUE, 0);
   }
 }
 /////////////////////////////////////////////
@@ -111,6 +134,16 @@ void loop() {
         sats = gps.satellites.value();
       }
     }
+
+    // PRINT DATA
+    Serial.println("Temperature: " + String(temp));
+    Serial.println("Humidity: " + String(hum));
+    Serial.println("Longitude: " + String(lon));
+    Serial.println("Latitude: " + String(lat));
+    Serial.println("Altitude: " + String(meters));
+    Serial.println("Acceleration: " + String(aaReal.x) + " " + String(aaReal.y) + " " + String(aaReal.z));
+    Serial.println("Gyroscope: " + String(ypr[0]) + " " + String(ypr[1]) + " " + String(ypr[2]) + "\n");
+
     time_aux = millis();
   }
 
@@ -124,15 +157,22 @@ void loop() {
 
       // Get acceleration
       mpu.dmpGetAccel(&aa, fifoBuffer);
-      mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-      Serial.print("areal\t");
-      Serial.print(aaReal.x);
-      Serial.print("\t");
-      Serial.print(aaReal.y);
-      Serial.print("\t");
-      Serial.println(aaReal.z);
+      mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);   // For our needs aaReal is better because it depreciates the constant effect of gravity
+      
+      // Average
+      mean_accel = (aaReal.x + aaReal.y + aaReal.z) / 3;
 
-      // Serial.print("ypr\t");
+      // Serial.print("areal\t");
+      // Serial.print(aaReal.x);
+      // Serial.print("\t");
+      // Serial.print(aaReal.y);
+      // Serial.print("\t");
+      // Serial.print(aaReal.z);
+      // Serial.print("\t");
+      // Serial.print(mean_accel);
+
+      // Serial.print("\t");
+      // Serial.print("gyro\t");
       // Serial.print(ypr[0] * 180/M_PI);
       // Serial.print("\t");
       // Serial.print(ypr[1] * 180/M_PI);
@@ -140,6 +180,5 @@ void loop() {
       // Serial.println(ypr[2] * 180/M_PI);
     }
   }
-
   delay(100);
 }

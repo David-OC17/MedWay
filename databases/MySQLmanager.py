@@ -18,10 +18,13 @@ or 'aws' option for a cloud database manager.
 import mysql.connector
 from mysql.connector import Error
 from datetime import date, datetime
+from mysql.connector import connect
 from time import strftime
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
 from allQueryResult import QueryResult
 import pandas as pd
-
+import serial
 from dotenv import load_dotenv
 import os
 
@@ -469,8 +472,63 @@ class MySQLmanager:
         '''
         Run when using 'local' manager in order to listen for incoming data streams to be stored in local database (later to be pushed to cloud)
         '''
+        medway: MySQLConnection = connect(
+        host="127.0.0.1",
+        user="root",
+        password="",
+        database="medway"
+    )   
+
         if self.managerType != 'local':
             raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
+        
+        medway_cursor: MySQLCursor = medway.cursor()
+        print("Connected to local database")
+
+        #Open a serial port that is connected to an Arduino
+        #Program will wait until all serial data is received from Arduino
+        #Port description will vary according to operating system. Linux will be in the form /dev/ttyXXXX and Windows and MAC will be COMX.
+        serialCom = serial.Serial(port='COM4', baudrate=9600)
+
+        #Write out a single character encoded in utf-8; this is defalt encoding for Arduino serial comms
+        #This character tells the Arduino to start sending data
+        serialCom.write(bytes('x','utf-8'))
+        while True:
+    #Read in data from Serial until (new line) received
+            serialCom_bytes = serialCom.readline()
+        
+            #Convert received bytes to text format and take out the new line characters and spaces
+            decoded_bytes = (serialCom_bytes[0:len(serialCom_bytes)-2].decode("utf-8").strip('\r\n\n'))
+            
+            #Retreive current time and date
+            c = datetime.now()
+            current_time = c.strftime('%H:%M:%S')
+            current_date = c.strftime('%Y-%m-%d')   
+            flag = current_time
+            #If Arduino has sent a string "stop", exit loop
+            if (decoded_bytes == "NAN"):
+                print("Error en el sensor")
+                break
+            #Split the row string into a list of elements
+            row = (decoded_bytes)
+            row_elements = row.split(",")
+            batch_number = 195251
+            device_number = 729864
+            x_cordinate = 20.733070
+            y_cordinate = -103.456055
+            sql = "INSERT INTO sensor_data (batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            data = (int(batch_number),int(device_number),current_date,current_time,x_cordinate,y_cordinate,float(row_elements[0]), float(row_elements[1]), float(row_elements[2]))
+            medway_cursor.execute(sql,data)
+
+            # Commit the changes to the database
+            medway.commit()
+
+        # Close port and medway local database
+        serialCom.close()
+        # medwaydata.close()
+        medway_cursor.close()
+        medway.close()
+        print("Done")
         # Receive incoming data stream
         
         # Parse data stream

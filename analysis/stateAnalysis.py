@@ -141,4 +141,4 @@ def analyzeState(testing:bool=False) -> tuple:
     numBatches = len(groups)
     
     # Return all the statistics for the report to be generated
-    return (alertCount, numBatches, goodBatches, badBatches, groups)
+    return (alertCount, numBatches, goodBatches, badBatches, passed)

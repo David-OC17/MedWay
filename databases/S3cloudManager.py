@@ -9,6 +9,11 @@ The bucket is divided into 3 main folders:
 Use the provided methods as appropiate to add and retreive files.
 '''
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 class S3manager:
     '''
     Use this class in order to administer the remote (cloud based) AWS-S3 bucket for analytics reports.

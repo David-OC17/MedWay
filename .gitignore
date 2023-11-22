@@ -2,6 +2,10 @@
 # Other
 /databases/config.py
 /test/databaseConnection/config.py
+# Change from config.py --> .env
+/databases/.env
+/test/databaseConnection/.env
+
 /test/data/sensor_data.csv
 /test/data/sensor_data_train.csv
 /analysis/reports/dailyReportTemplate.log

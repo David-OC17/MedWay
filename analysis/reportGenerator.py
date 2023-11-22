@@ -147,10 +147,14 @@ def conditionStatistics(withStats:bool=True, testing:bool=False, show:bool=False
     
     return (minTemp, maxTemp, minHum, maxHum, minLight, maxLight)
 
-def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, badBatches:int, groups:list , minTemp:float, maxTemp:float, minHum:float, maxHum:float, minLight:float, maxLight:float) -> None:
+def createStateTable(states:map) -> None:
+    pass
+
+def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, badBatches:int, minTemp:float, maxTemp:float, minHum:float, maxHum:float, minLight:float, maxLight:float) -> None:
     '''
     Takes the appropriate template, adds the dynamic data, compiles into a `.pdf` document.
     '''
+    
     # Read the template
     with open('./templates/dailyReportTemplate.tex', 'r') as template_file:
         template_content = template_file.read()
@@ -160,10 +164,8 @@ def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, ba
     percGoodBatches = (goodBatches / numBatches) * 100
     percBadBatches = (badBatches / numBatches) * 100
     periodType = 'daily'
-    groupsString = ', '.join(map(str, groups))
     
-    template_content = template_content.replace("<<PRODUCT>>", str(groupsString))
-    template_content = template_content.replace("<<BATCHES>>", str(groupsString))
+    template_content = template_content.replace("<<PRODUCT>>", str(product))
     template_content = template_content.replace("<<PERIOD_TYPE>>", str(periodType))
     template_content = template_content.replace("<<GOOD_BATCHES>>", str(goodBatches))
     template_content = template_content.replace("<<NUM_ALERTS>>", str(alertCount))
@@ -185,13 +187,3 @@ def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, ba
     # Compile LaTeX to PDF using pdflatex
     # -output-directory=./reports/dailyReport.pdf
     subprocess.run(['pdflatex', '-shell-escape', './temp/dailyReport.tex'])
-    subprocess.run(['bash', './cleanUp.sh'], capture_output=True, text=True)
-
-    # Clean up auxiliary files
-    shutil.rmtree('__pycache__', ignore_errors=True)
-    shutil.rmtree('dailyReport.aux', ignore_errors=True)
-    shutil.rmtree('dailyReport.log', ignore_errors=True)
-    shutil.rmtree('dailyReport.out', ignore_errors=True)
-
-# if __name__ == '__main__':
-#     conditionStatistics(withStats=True, testing=True, show=False)

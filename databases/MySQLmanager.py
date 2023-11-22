@@ -22,15 +22,10 @@ from time import strftime
 from allQueryResult import QueryResult
 import pandas as pd
 
-from .config import *
-'''
-Store db_config variables in the following format in order to connect to AWS
+from dotenv import load_dotenv
+import os
 
-host = '...'
-user = '...'
-password = '...'
-database = '...'
-'''
+load_dotenv()
 
 class MySQLmanager:
     def __init__(self, managerType: str) -> None:
@@ -41,26 +36,26 @@ class MySQLmanager:
         if(managerType == 'cloud' or managerType == 'aws'):
             self.managerType = managerType
             self.db_config = {
-                'host': cloud_host,
-                'user': cloud_user,
-                'password': cloud_password,
-                'database': cloud_database
+                'host': os.getenv("CLOUD_HOST"),
+                'user': os.getenv("CLOUD_USER"),
+                'password': os.getenv("CLOUD_PASSWORD"),
+                'database': os.getenv("CLOUD_DATABASE")
             }
         elif (managerType == 'local'):
             self.managerType = managerType
             self.db_config = {
-                'host': local_host,
-                'user': local_user,
-                'password': local_password,
-                'database': local_database
+                'host': os.getenv("LOCAL_HOST"),
+                'user': os.getenv("LOCAL_USER"),
+                'password': os.getenv("LOCAL_PASSWORD"),
+                'database': os.getenv("LOCAL_DATABASE")
             }
         elif (managerType == 'local_test'):
             self.managerType = managerType
             self.db_config = {
-                'host': test_host,
-                'user': test_user,
-                'password': test_password,
-                'database': test_database
+                'host': os.getenv("TEST_HOST"),
+                'user': os.getenv("TEST_USER"),
+                'password': os.getenv("TEST_PASSWORD"),
+                'database': os.getenv("TEST_DATABASE")
             }
         else:
             raise ValueError("No suitable manager type for constructor of MySQLmanager. Use 'cloud' or 'local'.")

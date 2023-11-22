@@ -8,4 +8,5 @@ xgboost == 2.0.2
 sklearn == 0.0.post5
 seaborn == 0.12.2
 pickleshare == 0.7.5
-matplotlib == 3.8.0 
+matplotlib == 3.8.0
+python-dotenv == 1.0.0

@@ -2,7 +2,7 @@
 #include <DHT.h>
 #include <TinyGPS++.h>
 #include "MPU6050_6Axis_MotionApps20.h"
-
+#include "WiFi.h"
 
 // MACROS
 #define DHT_PIN 4
@@ -12,10 +12,20 @@
 #define RED 27
 #define GREEN 14
 #define BLUE 12
+
+// Wifi connection
+const char* ssid = "55 HOME";
+const char* password = "bienvenidos55";
+WiFiServer server(80);
+const int wifi_timeout = 30000;   // Timeout to stop checking for wifi connection
  
 // Constants
 const int time2send = 3000;
 const int time2sample_dht = 1000;
+
+// Flags
+bool wifi_connected = false;
+bool mpu_connected = false;
 
 // Sensores
 DHT dht(DHT_PIN, DHTTYPE, 22);
@@ -59,6 +69,70 @@ void dmpDataReady(){
 }
 /////////////////////////////////////////////
 
+void getGpsInfo(){
+  char c = Serial2.read();
+      if (gps.encode(c)){   // If a valid sentence comes in get data
+        lat = gps.location.lat();
+        lon = gps.location.lng();
+        meters = gps.altitude.meters();
+        sats = gps.satellites.value();
+      }
+}
+
+void wifiConnect(){
+  // Wifi begin
+  time_aux = millis();
+  WiFi.begin(ssid, password);
+  while(WiFi.status() != WL_CONNECTED && millis() - time_aux < wifi_timeout){
+    delay(500);
+    Serial.println("Connecting to WiFi");
+  }
+  // Update connected flag
+  if(WiFi.status() == WL_CONNECTED){
+    wifi_connected = true;
+  }
+}
+
+void getMpuData(){
+  // If dmp was configured succesfully read available packet to fifo buffer
+  if(mpu.dmpGetCurrentFIFOPacket(fifoBuffer)){
+      // Get yaw/pitch/roll in array
+      mpu.dmpGetQuaternion(&q, fifoBuffer);
+      mpu.dmpGetGravity(&gravity, &q);
+      mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+
+      // Get acceleration
+      mpu.dmpGetAccel(&aa, fifoBuffer);
+      mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);   // For our needs aaReal is better because it depreciates the constant effect of gravity
+      
+      // Average
+      mean_accel = (aaReal.x + aaReal.y + aaReal.z) / 3;
+  }
+}
+
+void updateRGBStat(){
+  if(wifi_connected && mpu_connected){
+    Serial.println("All working fine");
+    analogWrite(RED, 0);     // GREEN (working fine)
+    analogWrite(GREEN, 255);
+    analogWrite(BLUE, 0);
+  }else if(wifi_connected && !mpu_connected){
+    analogWrite(RED, 255);     // PURPLE
+    analogWrite(GREEN, 0);
+    analogWrite(BLUE, 255);
+  }else if(!wifi_connected && mpu_connected){
+    analogWrite(RED, 255);     // ORANGE
+    analogWrite(GREEN, 165);
+    analogWrite(BLUE, 0);
+  }else{
+    analogWrite(RED, 255);   // RED (nothing works)
+    analogWrite(GREEN, 0);
+    analogWrite(BLUE, 0);
+  }
+}
+
+//////////////////////////////////////////
+
 void setup() {
   // UART channels
   Serial.begin(115200);
@@ -76,13 +150,19 @@ void setup() {
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
 
+  // MPU and DMP init
+  Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
+  device_status = mpu.dmpInitialize();
+
   analogWrite(BLUE, 255);
   analogWrite(RED, 0);
   analogWrite(GREEN, 0);
 
-  // MPU and DMP init
-  Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
-  device_status = mpu.dmpInitialize();
+  // Wifi begin
+  wifiConnect();
+  Serial.print("Connected to WiFi. IP address: ");
+  Serial.println(WiFi.localIP());
+  server.begin();
 
   // MPU DMP status handling
   if(device_status == 0){
@@ -98,25 +178,30 @@ void setup() {
 
     // Update dmp ready flag to true
     Serial.println("\nMPU DMP is ready to use");
-    dmp_ready = true;
+    // dmp_ready = true;
     
     packet_size = mpu.dmpGetFIFOPacketSize();  // Expected packet size for dmp
+    mpu_connected = true;
 
-    analogWrite(RED, 0);
-    analogWrite(GREEN, 255);
-    analogWrite(BLUE, 0);
-    
   }else{
     // Error: 1 = Initial memory load failed, 2 = DMP configuration updates failed
     Serial.println("DMP config failed with code " + String(device_status));
-    analogWrite(RED, 255);
-    analogWrite(GREEN, 0);
-    analogWrite(BLUE, 0);
+    mpu_connected = false;
   }
+  
+  // Update RGB LED as flag
+  updateRGBStat();
 }
+
 /////////////////////////////////////////////
 
 void loop() {
+  // WiFi client handling
+  WiFiClient client = server.available();   // Get available clients for connection
+  if(client.connected()){
+    client.println("Sup yo");
+  }
+
   // While there is no available data from MPU
   if(millis() - time_aux >= time2send){
     // DHT section
@@ -126,13 +211,8 @@ void loop() {
     // GPS Section
     while (Serial2.available())
     {
-      char c = Serial2.read();
-      if (gps.encode(c)){   // If a valid sentence comes in get data
-        lat = gps.location.lat();
-        lon = gps.location.lng();
-        meters = gps.altitude.meters();
-        sats = gps.satellites.value();
-      }
+      // Get currently available info in serial2 from gps
+      getGpsInfo();
     }
 
     // PRINT DATA
@@ -142,43 +222,15 @@ void loop() {
     Serial.println("Latitude: " + String(lat));
     Serial.println("Altitude: " + String(meters));
     Serial.println("Acceleration: " + String(aaReal.x) + " " + String(aaReal.y) + " " + String(aaReal.z));
-    Serial.println("Gyroscope: " + String(ypr[0]) + " " + String(ypr[1]) + " " + String(ypr[2]) + "\n");
+    Serial.println("Gyroscope: " + String(ypr[0] * 180/M_PI) + " " + String(ypr[1] * 180/M_PI) + " " + String(ypr[2] * 180/M_PI) + "\n");
 
     time_aux = millis();
   }
 
-  // If dmp was configured succesfully read available packet to fifo buffer
-  if(dmp_ready){
-    if(mpu.dmpGetCurrentFIFOPacket(fifoBuffer)){
-      // Get yaw/pitch/roll in array
-      mpu.dmpGetQuaternion(&q, fifoBuffer);
-      mpu.dmpGetGravity(&gravity, &q);
-      mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-
-      // Get acceleration
-      mpu.dmpGetAccel(&aa, fifoBuffer);
-      mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);   // For our needs aaReal is better because it depreciates the constant effect of gravity
-      
-      // Average
-      mean_accel = (aaReal.x + aaReal.y + aaReal.z) / 3;
-
-      // Serial.print("areal\t");
-      // Serial.print(aaReal.x);
-      // Serial.print("\t");
-      // Serial.print(aaReal.y);
-      // Serial.print("\t");
-      // Serial.print(aaReal.z);
-      // Serial.print("\t");
-      // Serial.print(mean_accel);
-
-      // Serial.print("\t");
-      // Serial.print("gyro\t");
-      // Serial.print(ypr[0] * 180/M_PI);
-      // Serial.print("\t");
-      // Serial.print(ypr[1] * 180/M_PI);
-      // Serial.print("\t");
-      // Serial.println(ypr[2] * 180/M_PI);
-    }
+  // Get MPU data
+  if(mpu_connected){
+    getMpuData();
   }
+
   delay(100);
 }

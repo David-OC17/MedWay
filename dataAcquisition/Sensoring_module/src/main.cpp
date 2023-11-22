@@ -1,45 +1,95 @@
 #include <Arduino.h>
 #include <DHT.h>
 #include <TinyGPS++.h>
+#include "MPU6050_6Axis_MotionApps20.h"
+
 
 // MACROS
 #define DHT_PIN 4
 #define DHTTYPE DHT22
+#define MPU_INTERRUPT_PIN 27
 
 // Constants
 const int time2send = 3000;
 const int time2sample_dht = 1000;
 
-// Communication
-// EspSoftwareSerial::UART ss_gps;
-
 // Sensores
 DHT dht(DHT_PIN, DHTTYPE, 22);
 TinyGPSPlus gps;
+MPU6050 mpu;
 
 // GLOBAL VARS FOR TELEMETRY //
 // DHT vars
 float hum, temp;
+
 // GPS vars
 float lat, lon;
 float meters = 0;
 uint8_t sats = 0;
 
+// MPU Control vars
+bool dmp_ready = false;
+uint8_t device_status;
+uint8_t interrupt_status;
+uint8_t fifoBuffer[64];
+uint16_t packet_size;
+uint16_t fifo_count;
+
+// DMP Vars
+Quaternion q;
+VectorFloat gravity;
+float ypr[3];  // Yaw, Pitch, Roll
+float real_ypr[3];
+
 // Time management
 unsigned long time_aux = 0;
 
+///// MPU INTERRUPT /////////////////////////
+volatile bool mpu_interrupt = false;
+void dmpDataReady(){
+  mpu_interrupt = true;
+}
+/////////////////////////////////////////////
+
 void setup() {
   // UART channels
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial2.begin(9600);
+
+  // I2C communication
+  Wire.begin();
 
   // DHT temperature sensor
   dht.begin();
+
+  // MPU and DMP init
+  Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
+  device_status = mpu.dmpInitialize();
+
+  // MPU DMP status handling
+  if(device_status == 0){
+    mpu.setDMPEnabled(true);
+
+    // Config interrupt
+    attachInterrupt(digitalPinToInterrupt(MPU_INTERRUPT_PIN), dmpDataReady, RISING);
+    interrupt_status = mpu.getIntStatus();
+
+    // Update dmp ready flag to true
+    Serial.println("MPU DMP is ready to use");
+    dmp_ready = true;
+    
+    packet_size = mpu.dmpGetFIFOPacketSize();  // Expected packet size for dmp
+
+  }else{
+    // Error: 1 = Initial memory load failed, 2 = DMP configuration updates failed
+    Serial.println("DMP config failed with code " + String(device_status));
+  }
 }
+/////////////////////////////////////////////
 
 void loop() {
+  // While there is no available data from MPU
   if(millis() - time_aux >= time2send){
-
     // DHT section
     hum = dht.readHumidity();
     temp = dht.readTemperature();
@@ -55,16 +105,40 @@ void loop() {
         sats = gps.satellites.value();
       }
     }
-
-    // Print data
-    Serial.println("Temperatura: " + String(temp));
-    Serial.println("Humedad: " + String(hum));
-    Serial.println("Longitud: " + String(lon));
-    Serial.println("Latitud: " + String(lat));
-    Serial.println("Satelites " + String(sats));
-    Serial.println("Altura: " + String(meters) + "\n");
-
     time_aux = millis();
   }
-  delay(10);
+
+  // Interrupt after handling
+  mpu_interrupt = false;
+  interrupt_status = mpu.getIntStatus();
+
+  // Get current number of bits in the FIFO
+  fifo_count = mpu.getFIFOCount(); 
+
+  // Overflow control
+  if((interrupt_status & 0x10) || fifo_count == 1024){
+    mpu.resetFIFO();
+    Serial.println("Overflow!");
+  }
+  else if(interrupt_status & 0x02){
+    // Wait for correct data length
+    while(fifo_count < packet_size){
+      fifo_count = mpu.getFIFOCount();
+    }
+
+    // Cause we already read a package 
+    fifo_count -= packet_size; 
+
+    // MMostrar Yaw, Pitch, Roll
+    mpu.dmpGetQuaternion(&q, fifoBuffer);
+    mpu.dmpGetGravity(&gravity, &q);
+    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+    Serial.print("ypr\t");
+    Serial.print(ypr[0] * 180/M_PI);
+    Serial.print("\t");
+    Serial.print(ypr[1] * 180/M_PI);
+    Serial.print("\t");
+    Serial.println(ypr[2] * 180/M_PI);
+  }
+  delay(100);
 }

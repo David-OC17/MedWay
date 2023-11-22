@@ -84,6 +84,22 @@ class Styles:
                 "color" : "#3A3E5F",
                 "size" : 70,
                 "height" : 175,
+            },
+            "file" : {
+                "width" : 275,
+                "height" : 275,
+                "padding" : 25,
+                "border_radius" : 25,
+                "font" : "Arimo",
+                "color" : "#000000",
+                "bgcolor" : "#70D2D6",
+                "font_size" : 20,
+            },
+            "file_grid" : {
+                "spacing" : 20,
+                "row_spacing" : 110,
+                "padding" : 15,
+                "height" : 600
             }
         }
 

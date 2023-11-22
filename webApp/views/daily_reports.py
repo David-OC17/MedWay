@@ -25,6 +25,8 @@ def DailyReports(page: ft.Page) -> ft.Column:
 
     # Title of the week reports page
     title: ft.Container = SDailyReports.title()
+    # Daily reports
+    daily_reports: ft.Container = SDailyReports.daily_reports()
 
     # Properties of the week reports page
     view: ft.Column = ft.Column(
@@ -32,7 +34,7 @@ def DailyReports(page: ft.Page) -> ft.Column:
         # Composed by:
         # - Navigation bar
         # - Title of the week reports page
-        # - Week reports
+        # - Daily reports
         controls = [
             ft.Container(
                 expand = True,
@@ -48,7 +50,9 @@ def DailyReports(page: ft.Page) -> ft.Column:
                             content = ft.Column(
                                 controls = [
                                     # Title of the week reports page
-                                    title
+                                    title,
+                                    # Daily reports
+                                    daily_reports
                                 ]
                             )
                         )

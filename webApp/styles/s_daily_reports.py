@@ -2,10 +2,14 @@
 import flet as ft
 
 from styles.styles import Styles
+from other.s3_connection import S3Connection
 
 
 # Style properties for the week reports page
 styles: dict[str] = Styles.daily_reports_styles()
+
+# S3 connection
+s3_connection: S3Connection = S3Connection()
 
 
 class SDailyReports:
@@ -13,6 +17,63 @@ class SDailyReports:
     Properties of the controls used by the function :function:`DailyReports`
     from the :file:`daily_reports.py` for creating the week reports page.
     """
+
+    def _build_file_card(file_name: str) -> ft.Container:
+        """
+        Builds a card for a file.
+
+        Parameters:
+            - file_name (str): Name of the file to build the card for.
+
+        Returns:
+            - :return:`file_card` (ft.Container): Card for the file.
+        """
+
+        # Name of the file
+        file_name_content: ft.Container = ft.Container(
+            alignment = ft.alignment.center,
+            content = ft.Text(
+                file_name,
+                font_family = styles["file"]["font"],
+                size = styles["file"]["font_size"],
+                color = styles["file"]["color"],
+                weight = ft.FontWeight.W_300,
+                text_align = ft.TextAlign.CENTER
+            )
+        )
+
+        # Icon for the file
+        file_icon: ft.Container = ft.Container(
+            expand = True,
+            alignment = ft.alignment.center,
+            content = ft.Image(
+                src = "images/pdf_icon.png",
+                fit = ft.ImageFit.CONTAIN,
+            )
+        )
+
+        # Card for the file
+        file_card: ft.Container = ft.Container(
+            width = styles["file"]["width"],
+            height = styles["file"]["height"],
+            padding = styles["file"]["padding"],
+            bgcolor = styles["file"]["bgcolor"],
+            border_radius = ft.border_radius.all(styles["file"]["border_radius"]),
+            alignment = ft.alignment.center,
+            content = ft.Column(
+                alignment = ft.MainAxisAlignment.CENTER,
+                controls = [
+                    # Icon for the file
+                    file_icon,
+                    # Name of the file
+                    file_name_content
+                ]
+            ),
+            key = file_name
+        )
+
+        return file_card
+
 
     def title() -> ft.Container:
         """
@@ -92,3 +153,50 @@ class SDailyReports:
         )
 
         return title_content
+
+
+    def daily_reports() -> ft.Container:
+        """
+        File grid containing the daily reports.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`daily_reports` (ft.Container): File grid containing the daily reports.
+        """
+
+        # File counter
+        _counter: int = 0
+
+        # List view for the rows of the file grid
+        list_view: ft.ListView = ft.ListView(
+            spacing = styles["file_grid"]["spacing"],
+            padding = styles["file_grid"]["padding"],
+            height = styles["file_grid"]["height"],
+        )
+
+        # Get the names of the files from the S3 bucket
+        files: list[str] = s3_connection.get_file_names()
+
+        # Cards for the files are added to the list view
+        for row in range((len(files) // 4) + 1):
+            list_row: ft.Row = ft.Row(spacing = styles["file_grid"]["row_spacing"])
+            for file in range(4):
+                # Prevents to raise an error if the the last row isn't complete
+                try:
+                    file_card: ft.Container = SDailyReports._build_file_card(files[_counter])
+                    list_row.controls.append(file_card)
+                    _counter += 1
+                except IndexError:
+                    break
+
+            list_view.controls.append(list_row)
+
+        # The list view is added to a container to create the file grid
+        daily_reports: ft.Container = ft.Container(
+            alignment = ft.alignment.center,
+            content = list_view
+        )
+
+        return daily_reports

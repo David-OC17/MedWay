@@ -36,13 +36,13 @@ class NavBar:
                 ),
                 # Week reports page button
                 ft.NavigationDestination(
-                    label = "Week Rep.",
+                    label = "Daily Rep.",
                     icon = ft.icons.DESCRIPTION_OUTLINED,
                     selected_icon = ft.icons.DESCRIPTION,
                 ),
                 # General reports page button
                 ft.NavigationDestination(
-                    label = "General Rep.",
+                    label = "Week Rep.",
                     icon = ft.icons.COLLECTIONS_BOOKMARK_OUTLINED,
                     selected_icon = ft.icons.COLLECTIONS_BOOKMARK,
                 ),

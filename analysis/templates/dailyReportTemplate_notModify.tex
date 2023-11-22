@@ -12,12 +12,12 @@
 % You have 3 option for the department identification as showed bellow
 
 \title{Pharma Comp.}
-\titletwo{{<<PRODUCT>>}}
+\titletwo{<<Product name/denomination>>}
 
 % Use the author section to show some basic numbers
-\author{Num. alerts \\ {<<NUM_ALERTS>>}
-	\and Good batches percentage \\ {<<GOOD_BATCHES>>}
-    \and Bad batches count \\ {<<BAD_BATCHES>>}
+\author{Num. alerts \\ NUMBER
+	\and Good batches percentage \\ NUMBER
+    \and Bad batches count \\ NUMBER
     } 
     
 \date{\today}
@@ -29,26 +29,49 @@
 
 \begin{abstract}
 
-The report includes information for the batches {<<BATCHES>>}, up to the given date. For the {<<PERIOD_TYPE>>} period, {<<NUM_ALERTS>>} were triggered. Up to this data, \textbf{GOOD\_BATCHES} batches are predicted to be in good condition and \textbf{BAD\_BATCHES} in bad condition, from the \textbf{TOTAL\_BATCHES} total batches.
+% Use the following placeholders as appropiate
+% {<<BATCHES>>}
+% {<<PERIOD_TYPE>>}
+% {<<GOOD_BATCHES>>}
+% {<<NUM_ALERTS>>}
+% {<<BAD_BATCHES>>}
+% {<<TOTAL_BATCHES>>}
+
+% {<<PERC_GOOD_BATCHES>>}
+% {<<PERC_OKAY_BATCHES>>}
+% {<<PERC_BAD_BATCHES>>}
+
+% {<<HIGHEST_TEMPERATURE>>}
+% {<<LOWEST_TEMPERATURE>>}
+% {<<HIGHEST_HUMIDITY>>}
+% {<<LOWEST_HUMIDITY>>}
+% {<<HIGHEST_UV_LIGHT>>}
+% {<<LOWEST_UV_LIGHT>>}
+
+
+% Replace the \textbf{WORD} with the corresponding placeholder
+
+
+The report includes information for the batches \textbf{BATCHES}, up to the given date. For the \textbf{PERIOD\_TYPE} period, \textbf{NUM\_ALERTS} were triggered. Up to this data, \textbf{GOOD\_BATCHES} batches are predicted to be in good condition and \textbf{BAD\_BATCHES} in bad condition, from the \textbf{TOTAL\_BATCHES} total batches.
 
 \end{abstract}
 
 %%--------------------%%
 
 \section{Categories per batch}
-The model predicts the following classes for the given {<<TOTAL_BATCHES>>} in the period.
+The model predicts the following classes for the given \textbf{TOTAL\_BATCHES} in the period.
 
 % Show graphics of the classification of the different batches
 \begin{figure}[!ht]
     \begin{center}
         % Modify direction of the imgs -> images directory
-        \includegraphics[width=\textwidth/3]{./images/logo2.png}
+        \includegraphics[width=\textwidth/3]{../images/logo2.png}
         \caption{Batch classification}
         \label{img:engeniuslogo}
     \end{center}
 \end{figure}
 
-According to model classification, {<<PERC_GOOD_BATCHES>>}\% have been handled well and {<<PERC_BAD_BATCHES>>}\% have been mistreated or have suffered some mishap during their journey.
+According to model classification, \textbf{PERC\_GOOD\_BATCHES}\% have been handled well, \textbf{PERC\_OKAY\_BATCHES}\% have had a decent-okay handling, and \textbf{PERC\_BAD\_BATCHES}\% have been mistreated or have suffered some mishap during their journey.
 
 %%--------------------%%
 
@@ -60,7 +83,7 @@ The temperature average of all the batches during the period was, as the next fi
 % Show plot of the temperature average over time
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=\textwidth/2]{./temp/temperature_plot.png}
+        \includegraphics[width=\textwidth/3]{../images/humidity_example.png}
         \caption{Temperature over time}
         \label{img:engeniuslogo}
     \end{center}
@@ -75,7 +98,7 @@ The humidity average of all the batches during the period was, as the next figur
 % Show plot of the temperature average over time
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=\textwidth/2]{./temp/humidity_plot.png}
+        \includegraphics[width=\textwidth/3]{../images/humidity_example.png}
         \caption{Humidity over time}
         \label{img:engeniuslogo}
     \end{center}
@@ -90,7 +113,7 @@ The UV light average of all the batches during the period was, as the next figur
 % Show plot of the temperature average over time
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=\textwidth/2]{./temp/light_plot.png}
+        \includegraphics[width=\textwidth/3]{../images/humidity_example.png}
         \caption{UV Light over time}
         \label{img:engeniuslogo}
     \end{center}
@@ -103,9 +126,9 @@ The UV light average of all the batches during the period was, as the next figur
 The highest and lowest values for the temperature, humidity, and UV light for the day, amongst all batches, are as follows:
 
 \begin{itemize}
-    \item \textbf{Temperature:} Highest - {<<HIGHEST_TEMPERATURE>>}, Lowest - {<<LOWEST_TEMPERATURE>>}
-    \item \textbf{Humidity:} Highest - {<<HIGHEST_HUMIDITY>>}, Lowest - {<<LOWEST_HUMIDITY>>}
-    \item \textbf{UV Light:} Highest - {<<HIGHEST_UV_LIGHT>>}, Lowest - {<<LOWEST_UV_LIGHT>>}
+    \item \textbf{Temperature:} Highest - \textbf{<<Highest\_Temperature>>}, Lowest - \textbf{<<Lowest\_Temperature>>}
+    \item \textbf{Humidity:} Highest - \textbf{<<Highest\_Humidity>>}, Lowest - \textbf{<<Lowest\_Humidity>>}
+    \item \textbf{UV Light:} Highest - \textbf{<<Highest\_UV\_Light>>}, Lowest - \textbf{<<Lowest\_UV\_Light>>}
 \end{itemize}
 
 %%--------------------%%

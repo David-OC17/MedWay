@@ -10,6 +10,8 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import shutil
+import subprocess
 
 def conditionStatistics(withStats:bool=True, testing:bool=False, show:bool=False, maskOutliers:bool=False) -> tuple:
     '''
@@ -135,13 +137,61 @@ def conditionStatistics(withStats:bool=True, testing:bool=False, show:bool=False
     else: plt.savefig("./temp/light_plot.png")
     plt.close()
     
+    # Round the min/max values before return (2 decimals)
+    minTemp = round(minTemp, 2)
+    maxTemp = round(maxTemp, 2)
+    minHum = round(minHum, 2)
+    maxHum = round(maxHum, 2)
+    minLight = round(minLight, 2)
+    maxLight = round(maxLight, 2)
+    
     return (minTemp, maxTemp, minHum, maxHum, minLight, maxLight)
 
-def generatePDF(alertCount:int, numBatches:int, goodBatches:int, badBatches:int, startDate, endDate) -> None:
+def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, badBatches:int, groups:list , minTemp:float, maxTemp:float, minHum:float, maxHum:float, minLight:float, maxLight:float) -> None:
     '''
     Takes the appropriate template, adds the dynamic data, compiles into a `.pdf` document.
     '''
-    pass
+    # Read the template
+    with open('./templates/dailyReportTemplate.tex', 'r') as template_file:
+        template_content = template_file.read()
 
-if __name__ == '__main__':
-    conditionStatistics(withStats=True, testing=True, show=False)
+    # Fill the template
+    
+    percGoodBatches = (goodBatches / numBatches) * 100
+    percBadBatches = (badBatches / numBatches) * 100
+    periodType = 'daily'
+    groupsString = ', '.join(map(str, groups))
+    
+    template_content = template_content.replace("<<PRODUCT>>", str(groupsString))
+    template_content = template_content.replace("<<BATCHES>>", str(groupsString))
+    template_content = template_content.replace("<<PERIOD_TYPE>>", str(periodType))
+    template_content = template_content.replace("<<GOOD_BATCHES>>", str(goodBatches))
+    template_content = template_content.replace("<<NUM_ALERTS>>", str(alertCount))
+    template_content = template_content.replace("<<BAD_BATCHES>>", str(badBatches))
+    template_content = template_content.replace("<<TOTAL_BATCHES>>", str(numBatches))
+    template_content = template_content.replace("<<PERC_GOOD_BATCHES>>", str(percGoodBatches))
+    template_content = template_content.replace("<<PERC_BAD_BATCHES>>", str(percBadBatches))
+    template_content = template_content.replace("<<HIGHEST_TEMPERATURE>>", str(maxTemp))
+    template_content = template_content.replace("<<LOWEST_TEMPERATURE>>", str(minTemp))
+    template_content = template_content.replace("<<HIGHEST_HUMIDITY>>", str(maxHum))
+    template_content = template_content.replace("<<LOWEST_HUMIDITY>>", str(minHum))
+    template_content = template_content.replace("<<HIGHEST_UV_LIGHT>>", str(maxLight))
+    template_content = template_content.replace("<<LOWEST_UV_LIGHT>>", str(minLight))
+
+    # Write the filled template to a new file
+    with open('./temp/dailyReport.tex', 'w') as filled_template_file:
+        filled_template_file.write(template_content)
+
+    # Compile LaTeX to PDF using pdflatex
+    # -output-directory=./reports/dailyReport.pdf
+    subprocess.run(['pdflatex', '-shell-escape', './temp/dailyReport.tex'])
+    subprocess.run(['bash', './cleanUp.sh'], capture_output=True, text=True)
+
+    # Clean up auxiliary files
+    shutil.rmtree('__pycache__', ignore_errors=True)
+    shutil.rmtree('dailyReport.aux', ignore_errors=True)
+    shutil.rmtree('dailyReport.log', ignore_errors=True)
+    shutil.rmtree('dailyReport.out', ignore_errors=True)
+
+# if __name__ == '__main__':
+#     conditionStatistics(withStats=True, testing=True, show=False)

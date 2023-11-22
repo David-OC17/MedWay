@@ -2,8 +2,8 @@
 import flet as ft
 
 from views.home import Home
-from views.week_reports import DailyReports
-from views.general_reports import GeneralReports
+from views.daily_reports import DailyReports
+from views.month_reports import GeneralReports
 from views.analytics import Analytics
 
 

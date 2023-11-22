@@ -37,8 +37,10 @@ uint16_t fifo_count;
 
 // DMP Vars
 Quaternion q;
+VectorInt16 aa;     // Raw acceleration from the sensor
+VectorInt16 aaReal;
 VectorFloat gravity;
-float ypr[3];  // Yaw, Pitch, Roll
+float ypr[3];       // Yaw, Pitch, Roll
 float real_ypr[3];
 
 // Time management
@@ -70,12 +72,16 @@ void setup() {
   if(device_status == 0){
     mpu.setDMPEnabled(true);
 
+    // Calibrate 
+    mpu.CalibrateAccel(7);
+    mpu.CalibrateGyro(7);
+
     // Config interrupt
     attachInterrupt(digitalPinToInterrupt(MPU_INTERRUPT_PIN), dmpDataReady, RISING);
     interrupt_status = mpu.getIntStatus();
 
     // Update dmp ready flag to true
-    Serial.println("MPU DMP is ready to use");
+    Serial.println("\nMPU DMP is ready to use");
     dmp_ready = true;
     
     packet_size = mpu.dmpGetFIFOPacketSize();  // Expected packet size for dmp
@@ -108,37 +114,32 @@ void loop() {
     time_aux = millis();
   }
 
-  // Interrupt after handling
-  mpu_interrupt = false;
-  interrupt_status = mpu.getIntStatus();
+  // If dmp was configured succesfully read available packet to fifo buffer
+  if(dmp_ready){
+    if(mpu.dmpGetCurrentFIFOPacket(fifoBuffer)){
+      // Get yaw/pitch/roll in array
+      mpu.dmpGetQuaternion(&q, fifoBuffer);
+      mpu.dmpGetGravity(&gravity, &q);
+      mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
 
-  // Get current number of bits in the FIFO
-  fifo_count = mpu.getFIFOCount(); 
+      // Get acceleration
+      mpu.dmpGetAccel(&aa, fifoBuffer);
+      mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+      Serial.print("areal\t");
+      Serial.print(aaReal.x);
+      Serial.print("\t");
+      Serial.print(aaReal.y);
+      Serial.print("\t");
+      Serial.println(aaReal.z);
 
-  // Overflow control
-  if((interrupt_status & 0x10) || fifo_count == 1024){
-    mpu.resetFIFO();
-    Serial.println("Overflow!");
-  }
-  else if(interrupt_status & 0x02){
-    // Wait for correct data length
-    while(fifo_count < packet_size){
-      fifo_count = mpu.getFIFOCount();
+      // Serial.print("ypr\t");
+      // Serial.print(ypr[0] * 180/M_PI);
+      // Serial.print("\t");
+      // Serial.print(ypr[1] * 180/M_PI);
+      // Serial.print("\t");
+      // Serial.println(ypr[2] * 180/M_PI);
     }
-
-    // Cause we already read a package 
-    fifo_count -= packet_size; 
-
-    // MMostrar Yaw, Pitch, Roll
-    mpu.dmpGetQuaternion(&q, fifoBuffer);
-    mpu.dmpGetGravity(&gravity, &q);
-    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    Serial.print("ypr\t");
-    Serial.print(ypr[0] * 180/M_PI);
-    Serial.print("\t");
-    Serial.print(ypr[1] * 180/M_PI);
-    Serial.print("\t");
-    Serial.println(ypr[2] * 180/M_PI);
   }
+
   delay(100);
 }

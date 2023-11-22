@@ -24,7 +24,7 @@ def GeneralReports(page: ft.Page) -> ft.Column:
     nav_bar: ft.Container = NavBar().nav_bar(page)
 
     # Title of the general reports page
-    title: ft.Container = SMonthReports().title()
+    title: ft.Container = SMonthReports.title()
 
     # Properties of the general reports page
     view: ft.Column = ft.Column(

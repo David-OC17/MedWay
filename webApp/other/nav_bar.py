@@ -92,7 +92,7 @@ class NavBar:
 
         self._nav_bar.content.controls[2].elevation = 0
 
-        page.go("/week_reports")
+        page.go("/daily_reports")
 
 
     def _general_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
@@ -131,7 +131,7 @@ class NavBar:
 
         self._nav_bar.content.controls[3].elevation = 0
 
-        page.go("/general_reports")
+        page.go("/monthly_reports")
 
 
     def _analytics_button_on_hover(self, _: ft.HoverEvent) -> None:

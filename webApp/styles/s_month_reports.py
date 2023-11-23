@@ -1,11 +1,18 @@
 
 import flet as ft
+from os.path import expanduser, join
+from botocore.exceptions import ClientError
 
 from styles.styles import Styles
+from other.file_card import FileCard
+from other.s3_connection import S3Connection
 
 
 # Style properties for the week reports page
 styles: dict[str] = Styles.monthly_reports_styles()
+
+# Connection to the S3 bucket
+s3_connection: S3Connection = S3Connection()
 
 
 class SMonthReports:
@@ -92,3 +99,50 @@ class SMonthReports:
         )
 
         return title_content
+    
+
+    def monthly_reports(self, page: ft.Page) -> ft.Container:
+        """
+        File grid containing the monthly reports.
+
+        Parameters:
+            - :param:`page` (ft.Page): The page where the file grid will be placed.
+
+        Returns:
+            - :return:`monthly_reports_content` (ft.Container): File grid containing the monthly reports.
+        """
+
+        # File counter
+        _counter: int = 0
+
+        # List view for the rows of the file grid
+        _list_view: ft.ListView = ft.ListView(
+            spacing = styles["file_grid"]["spacing"],
+            padding = styles["file_grid"]["padding"],
+            height = styles["file_grid"]["height"]
+        )
+
+        # Get the file names from the S3 bucket
+        files: list[str] = s3_connection.get_file_names("monthly_reports")
+
+        # Cards for the files are added to the list view
+        for row in range((len(files) // 4) + 1):
+            list_row: ft.Row = ft.Row(spacing = styles["file_grid"]["row_spacing"])
+            for file in range(4):
+                # Prevents to raise an error if the the last row isn't complete
+                try:
+                    file_card: ft.Container = FileCard().build_file_card(page, files[_counter], "monthly_reports")
+                    list_row.controls.append(file_card)
+                    _counter += 1
+                except IndexError:
+                    break
+
+            _list_view.controls.append(list_row)
+
+        # The list view is added to a container to create the file grid
+        monthly_reports_content: ft.Container = ft.Container(
+            alignment = ft.alignment.center,
+            content = _list_view
+        )
+
+        return monthly_reports_content

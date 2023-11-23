@@ -15,8 +15,9 @@ class S3Connection:
         # Connection to the S3 bucket
         self._s3_connection: Session = client(
             "s3",
-            aws_access_key_id="AKIA5RCYKSQAPI3AKL3K",
-            aws_secret_access_key="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",
+            aws_access_key_id = "AKIA5RCYKSQAPI3AKL3K",
+            aws_secret_access_key = "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",
+            region_name = "us-east-2",
         )
         # Files in the S3 bucket
         __files = self._s3_connection.list_objects(Bucket="test-medway-bucket")["Contents"]

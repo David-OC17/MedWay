@@ -2,8 +2,8 @@
 import flet as ft
 
 from views.home import Home
-from views.week_reports import WeekReports
-from views.general_reports import GeneralReports
+from views.daily_reports import DailyReports
+from views.month_reports import MonthReports
 from views.analytics import Analytics
 
 
@@ -18,8 +18,8 @@ class Router:
         self.date_time: ft.Text = date_time
         self.routes: dict[str, ft.Column] = {
             "/" : Home(page, date_time),                # Home page
-            "/week_reports" : WeekReports(page),        # Week reports page
-            "/general_reports" : GeneralReports(page),  # General reports page
+            "/daily_reports" : DailyReports(page),      # Daily reports page
+            "/monthly_reports" : MonthReports(page),    # Monthly reports page
             "/analytics" : Analytics(page),             # Analytics page
         }
         # Default route and page to be displayed
@@ -58,8 +58,8 @@ class Router:
 
         route_indices: dict[int, str] = {
             0 : "/",
-            1 : "/week_reports",
-            2 : "/general_reports",
+            1 : "/daily_reports",
+            2 : "/monthly_reports",
             3 : "/analytics"
         }
 

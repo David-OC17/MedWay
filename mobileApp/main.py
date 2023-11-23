@@ -72,5 +72,5 @@ def main(page: ft.Page) -> None:
 if __name__ == "__main__":
     ft.app(
         target = main, view = ft.AppView.WEB_BROWSER,
-        web_renderer = ft.WebRenderer.CANVAS_KIT, assets_dir = "webApp/assets"
+        web_renderer = ft.WebRenderer.CANVAS_KIT, assets_dir = "mobileApp/assets"
     )

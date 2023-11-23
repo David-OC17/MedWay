@@ -4,6 +4,45 @@ class Styles:
     Contains the styles for the web app.
     """
 
+    def file_card_styles() -> dict[str]:
+        """
+        Styles for the file cards.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`file_card_styles_dict` (dict[str]): The styles for the file cards.
+        """
+
+        file_card_styles_dict: dict[str] = {
+            "card" : {
+                "height" : 175,
+                "padding" : 25,
+                "border_radius" : 25,
+                "font" : "Arimo",
+                "font_size" : 20,
+                "color" : "#000000",
+                "bgcolor" : "#70D2D6",
+                "border_color" : "#F4FF2B"
+            },
+            "alert" : {
+                "font" : "Arimo",
+                "font_color" : "#FFFFFF",
+                "link_font_color" : "#0099EB",
+                "title_font_size" : 25,
+                "content_font_size" : 20,
+                "border_radius" : 25,
+                "button_width" : 200,
+                "bgcolor" : "#3A3E5F",
+                "border_color" : "#404040",
+                "border_radius" : 15,
+            }
+        }
+
+        return file_card_styles_dict
+
+
     def nav_bar_styles() -> dict[str]:
         """
         Styles for the navigation bar.
@@ -51,50 +90,60 @@ class Styles:
         return home_styles_dict
 
 
-    def week_reports_styles() -> dict[str]:
+    def daily_reports_styles() -> dict[str]:
         """
-        Styles for the week reports page components.
+        Styles for the daily reports page components.
 
         Parameters:
             - Doesn't take any parameters.
 
         Returns:
-            - :return:`week_reports_styles_dict` (dict[str]): The styles for the week reports page components.
+            - :return:`daily_reports_styles_dict` (dict[str]): The styles for the daily reports page components.
         """
 
-        week_reports_styles_dict: dict[str] = {
+        daily_reports_styles_dict: dict[str] = {
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
                 "size" : 40,
-                "height" : 175,
+                "height" : 100,
+            },
+            "file_list" : {
+                "height" : 500,
+                "spacing" : 10,
+                "row_spacing" : 10,
             }
         }
 
-        return week_reports_styles_dict
+        return daily_reports_styles_dict
 
 
-    def general_reports_styles() -> dict[str]:
+    def monthly_reports_styles() -> dict[str]:
         """
-        Styles for the general reports page components.
+        Styles for the monthly reports page components.
 
         Parameters:
             - Doesn't take any parameters.
 
         Returns:
-            - :return:`general_reports_styles_dict` (dict[str]): The styles for the general reports page components.
+            - :return:`monthly_reports_styles_dict` (dict[str]): The styles for the monthly reports page components.
         """
 
-        general_reports_styles_dict: dict[str] = {
+        monthly_reports_styles_dict: dict[str] = {
             "title" : {
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
                 "size" : 40,
-                "height" : 175,
+                "height" : 100,
+            },
+            "file_list" : {
+                "height" : 500,
+                "spacing" : 10,
+                "row_spacing" : 10,
             }
         }
 
-        return general_reports_styles_dict
+        return monthly_reports_styles_dict
 
 
     def analytics_styles() -> dict[str]:
@@ -114,7 +163,7 @@ class Styles:
                 "font" : "Roboto Bold",
                 "color" : "#3A3E5F",
                 "size" : 40,
-                "height" : 175,
+                "height" : 100,
             }
         }
 

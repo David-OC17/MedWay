@@ -46,7 +46,7 @@ class SAnalytics:
         title_content: ft.Container = ft.Container(
             height = styles["title"]["height"],
             alignment = ft.alignment.center,
-            offset = ft.Offset(0,-0.1),
+            offset = ft.Offset(0, 0.2),
             content = ft.Column(
                 alignment = ft.MainAxisAlignment.CENTER,
                 controls = [

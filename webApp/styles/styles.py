@@ -4,6 +4,44 @@ class Styles:
     Contains the styles for the web app.
     """
 
+    def file_card_styles() -> dict[str]:
+        """
+        Styles for the file cards.
+
+        Parameters:
+            - Doesn't take any parameters.
+
+        Returns:
+            - :return:`file_card_styles_dict` (dict[str]): The styles for the file cards.
+        """
+
+        file_card_styles_dict: dict[str] = {
+            "card" : {
+                "width" : 275,
+                "height" : 275,
+                "padding" : 25,
+                "border_radius" : 25,
+                "font" : "Arimo",
+                "font_size" : 20,
+                "color" : "#000000",
+                "bgcolor" : "#70D2D6",
+                "border_color" : "#F4FF2B"
+            },
+            "alert" : {
+                "font" : "Arimo",
+                "font_color" : "#FFFFFF",
+                "title_font_size" : 35,
+                "content_font_size" : 25,
+                "border_radius" : 25,
+                "button_width" : 200,
+                "bgcolor" : "#3A3E5F",
+                "border_color" : "#404040",
+            }
+        }
+
+        return file_card_styles_dict
+
+
     def nav_bar_styles() -> dict[str]:
         """
         Styles for the navigation bar.
@@ -85,16 +123,6 @@ class Styles:
                 "size" : 70,
                 "height" : 175,
             },
-            "file" : {
-                "width" : 275,
-                "height" : 275,
-                "padding" : 25,
-                "border_radius" : 25,
-                "font" : "Arimo",
-                "color" : "#000000",
-                "bgcolor" : "#70D2D6",
-                "font_size" : 20,
-            },
             "file_grid" : {
                 "spacing" : 20,
                 "row_spacing" : 110,
@@ -129,39 +157,16 @@ class Styles:
                 "color" : "#3A3E5F",
                 "size" : 70,
                 "height" : 175,
+            },
+            "file_grid" : {
+                "spacing" : 20,
+                "row_spacing" : 110,
+                "padding" : 15,
+                "height" : 600
             }
         }
 
         return monthly_reports_styles_dict
-
-
-    def analytics_styles() -> dict[str]:
-        """
-        Styles for the analytics page components.
-
-        Parameters:
-            - Doesn't take any parameters.
-
-        Returns:
-            - :return:`analytics_styles_dict` (dict[str]): The styles for the analytics page components.
-        """
-
-        analytics_styles_dict: dict[str] = {
-            "name": {
-                "font" : "Roboto Bold",
-                "color1" : "#3A3E5F",
-                "color2" : "#0BA391",
-                "size" : 70,
-            },
-            "title" : {
-                "font" : "Roboto Bold",
-                "color" : "#3A3E5F",
-                "size" : 70,
-                "height" : 175,
-            }
-        }
-
-        return analytics_styles_dict
 
 
     def analytics_styles() -> dict[str]:

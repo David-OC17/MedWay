@@ -19,18 +19,43 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import date, datetime
 from mysql.connector import connect
-from time import strftime
-from mysql.connector.connection import MySQLConnection
-from mysql.connector.cursor import MySQLCursor
+from time import strftime, time
 from allQueryResult import QueryResult
 import pandas as pd
 import serial
 from dotenv import load_dotenv
+import csv
 import os
+
+
+from config import Config
 
 load_dotenv()
 
+
 class MySQLmanager:
+    def send_to_cloud(self):
+        # Set the time duration to 30 minutes (in seconds)
+        duration = 30 * 60
+
+        # Check if the current time has exceeded the start time + duration
+        if time() - self.__start_time > duration:
+            self.__start_time = time()
+            return True
+        
+        return False
+    
+    def make_csv(self):
+        # Set the time duration to 24 hours (in hours)
+        duration = 24 * 60 * 60
+
+        # Check if the current time has exceeded the start time + duration
+        if time() - self.__start_time > duration:
+            self.__start_time = time()
+            return True
+        
+        return False
+            
     def __init__(self, managerType: str) -> None:
         '''
         managerType: 'cloud' = 'aws' or 'local'
@@ -63,6 +88,8 @@ class MySQLmanager:
         else:
             raise ValueError("No suitable manager type for constructor of MySQLmanager. Use 'cloud' or 'local'.")
         
+        self.__start_time = time()
+
     #################### START -> Create tables and stablish relationship ####################
 
     def create_tables(self) -> None:
@@ -70,8 +97,6 @@ class MySQLmanager:
         Run once, to create the tables in the database
         '''
         self.create_sensor_data_table()
-        self.create_batch_alerts_table()
-        self.establish_relationships()
         
     def create_sensor_data_table(self) -> None:
         try:
@@ -79,7 +104,7 @@ class MySQLmanager:
             cursor = connection.cursor()
             create_sensor_data_query = """
             CREATE TABLE IF NOT EXISTS sensor_data (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                ID INT PRIMARY KEY AUTO_INCREMENT,
                 batch_number INT,
                 device_number INT,
                 date DATE,
@@ -93,7 +118,7 @@ class MySQLmanager:
             """
             cursor.execute(create_sensor_data_query)
             connection.commit()
-            print("Sensor Data table created successfully.")
+            print("Sensor Data table created successfully.")        
         except Error as e:
             print(f"Error: {e}")
         finally:
@@ -101,51 +126,6 @@ class MySQLmanager:
                 cursor.close()
                 connection.close()
 
-    def create_batch_alerts_table(self) -> None:
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
-            # The ID key is used in both tables, but only full IDs will be present in sensor_data table,
-            #   since not all of them generate an alert for batch_alerts table
-            create_batch_alerts_query = """
-            CREATE TABLE IF NOT EXISTS batch_alerts (
-                ID INT PRIMARY KEY,
-                alert_number AUTO_INCREMENT INT ,
-                batch_number INT,
-                temperature_alert BOOLEAN,
-                humidity_alert BOOLEAN,
-                light_alert BOOLEAN
-            );
-            """
-            cursor.execute(create_batch_alerts_query)
-            connection.commit()
-            print("Batch Alerts table created successfully.")
-        except Error as e:
-            print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
-                
-    # Establish relationships between tables using foreign keys (batch number)
-    def establish_relationships(self) -> None:
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
-            foreign_key_query = """
-            ALTER TABLE batch_alerts
-            ADD FOREIGN KEY (batch_number) REFERENCES sensor_data(batch_number);
-            """
-            cursor.execute(foreign_key_query)
-            connection.commit()
-            print("Relationships established successfully.")
-        except Error as e:
-            print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
-        
     #################### END -> Create tables and stablish relationship ####################
     
     def fetch_data_from_database(self, start_id:int , end_id:int) -> list:
@@ -153,14 +133,17 @@ class MySQLmanager:
         Get a range of rows of values from the local database. Query the range given by startID-endID.
         Returns a list of values.
         '''
+        if self.managerType != 'local':
+                raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
+            
         try:
             connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
 
             # Query to fetch data within the specified ID range
             select_query = """
-            SELECT column1, column2, column3, ...
-            FROM your_table_name
+            SELECT batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
+            FROM sensor_data
             WHERE ID BETWEEN %s AND %s
             """
             cursor.execute(select_query, (start_id, end_id))
@@ -186,13 +169,16 @@ class MySQLmanager:
         Returns if upload was successful.
         '''        
         # Push all lines into the remote table
+        if self.managerType != 'cloud':
+                raise ValueError('Only cloud manager can interact with RDS cloud. Create a cloud manager to access.')
         try:
+
             connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
             
             # Define the INSERT INTO query with placeholders for data
             insert_query = """
-            INSERT INTO sensor_data (batch_number, device_number, date, time, x_coordinate, y_coordinate temperature, humidity, light_percentage)
+            INSERT INTO sensor_data (batch_number,device_number,date,time, x_coordinate,y_coordinate,temperature,humidity,light_percentage)
             VALUES (%s, %s, %s, %s, %s, %s, %s ,%s ,%s);
             """
             
@@ -204,34 +190,7 @@ class MySQLmanager:
             print("Records inserted successfully.")
         except Error as e:
             print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
-    
-    def pushBatchAlerts(self, starID: int, endID: int)-> None:
-        '''
-        Takes data from local batch alerts data table from startID to endID and pushes it to the cloud.
-        Returns if upload was successful.
-        '''
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
             
-            # Define the INSERT INTO query
-            insert_query = """
-            INSERT INTO batch_alerts (alert_number, batch_number, temperature_alert, humidity_alert, light_percentage_alert)
-            VALUES (%s, %s, %s, %s, %s);
-            """
-            
-            # Execute the query with data_list as a list of tuples
-            data_list = self.fetch_data_from_database(starID, endID)
-            cursor.executemany(insert_query, data_list)
-            
-            connection.commit()
-            print("Records inserted successfully.")
-        except Error as e:
-            print(f"Error: {e}")
         finally:
             if connection.is_connected():
                 cursor.close()
@@ -248,39 +207,13 @@ class MySQLmanager:
         Return if the removal was successfull.
         '''
         if self.managerType != 'local':
-            raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
+            raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
         
         try:
             connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
             
             delete_query = f"DELETE FROM sensor_data WHERE id >= {startID} AND id <= {endID}"
-            
-            cursor.execute(delete_query)
-            
-            connection.commit()
-            print("Range of rows deleted successfully from sensor data.")
-        except Error as e:
-            print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
-        
-    def removeBatchAlerts(self, startID: int, endID: int)-> None:
-        '''
-        Remove the sensor data in the range given by startAlertNum-endAlertNum.
-        Use it to clean local database and avoid data cloning local-cloud.
-        Return if the removal was successfull.
-        '''
-        if self.managerType != 'local':
-            raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
-        
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
-            
-            delete_query = f"DELETE FROM batch_alerts WHERE id >= {startID} AND id <= {endID}"
             
             cursor.execute(delete_query)
             
@@ -310,9 +243,10 @@ class MySQLmanager:
             print('Database clearance cancelled.')
         
         # Proceed with clearing the database
-        connection = mysql.connector.connect(**self.db_config)
-        cursor = connection.cursor()
-
+            connection = mysql.connector.connect(**self.db_config)
+            
+            cursor = connection.cursor()
+    
         try:
             # Get a list of all tables in the database
             cursor.execute("SHOW TABLES")
@@ -354,52 +288,37 @@ class MySQLmanager:
         # The function connect to the cloud and makes two queries, one for the sensor data table and one for the batch alerts table
         # It generates a QueryResult type where it stores the query result
         try:
-            connection = mysql.connector.connect(**self.db_config)
-            cursor = connection.cursor()
-            
             # Convert startDate and endDate to MySQL type for query
             startDate = datetime.strptime(startDate, "%d%b%Y")
             mysql_startDate = startDate.strftime("%Y-%m-%d")
             
             endDate = datetime.strptime(endDate, "%d%b%Y")
             mysql_endDate = startDate.strftime("%Y-%m-%d")
-            
+        
             
             # Define query where date between startDate and endDate
-            select_query = f"SELECT * FROM batch_alerts WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
+            select_query = f"SELECT * FROM sensor_data WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
                               
             cursor.execute(select_query)
             
-            '''
-            self.sensor_data_dtype =  np.dtype([
-                ('ID', np.int64),
-                ('batch_number', np.int64),
-                ('device_number', np.int64),
-                ('date', 'datetime64[D]'),  # Using datetime64[D] for date
-                ('temperature', np.float64),
-                ('humidity', np.float64),
-                ('light_percentage', np.float64),
-                ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
-                ('x_coordinate', np.float64),
-                ('y_coordinate', np.float64)
-            ])
+
+            # '''
+            # self.sensor_data_dtype =  np.dtype([
+            #     ('ID', np.int64),
+            #     ('batch_number', np.int64),
+            #     ('device_number', np.int64),
+            #     ('date', 'datetime64[D]'),  # Using datetime64[D] for date
+            #     ('temperature', np.float64),
+            #     ('humidity', np.float64),
+            #     ('light_percentage', np.float64),
+            #     ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
+            #     ('x_coordinate', np.float64),
+            #     ('y_coordinate', np.float64)
+            # ])
             
-            self.batch_alerts_dtype = np.dtype([
-                ('alert_number', np.int64),
-                ('batch_number', np.int64),
-                ('temperature_alert', np.bool_),
-                ('humidity_alert', np.bool_),
-                ('light_alert', np.bool_)
-            ])
-            '''
-            
-            sensor_data_df = pd.DataFrame(cursor.fetchall())
-            
-            # Get the IDs that we need to query from the batch_alerts based on which where present in the last query
-        
-            
-            result = QueryResult()
- 
+            # '''
+            # sensor_data_df = pd.DataFrame(cursor.fetchall())
+            # result = QueryResult()
         except Error as e:
             print(f"Error: {e}")
         finally:
@@ -408,145 +327,177 @@ class MySQLmanager:
                 connection.close()
     
     #################### END -> query tables ####################
-    
+
     #################### START -> Parse and add to local ####################
     
-    def parseAdd_TEST(self) -> None:
-        '''
-        TEST METHOD, DO NOT USE DURING PRODUCTION
-        Receives a string of data, which is the incoming serial flow from the sensoring module.
-        Parse the data and add it to the corresponding local database and tables.
-        '''
+    # def parseAdd_TEST(self) -> None:
+    #     '''
+    #     TEST METHOD, DO NOT USE DURING PRODUCTION
+    #     Receives a string of data, which is the incoming serial flow from the sensoring module.
+    #     Parse the data and add it to the corresponding local database and tables.
+    #     '''
         
-        if self.managerType != 'local_test':
-            raise ValueError('Local or cloud managers cannot alter test database. Create test manager to modify test_db.')
+    #     if self.managerType != 'local_test':
+    #         raise ValueError('Local or cloud managers cannot alter test database. Create test manager to modify test_db.')
         
-        # PARSING LOGIC MISSING, ADDING FROM TEST DATA FILE
-        # Read from /test_data.csv using Pandas
-        import pandas as pd
-        from mysql.connector import connect
-        from mysql.connector.connection import MySQLConnection
-        from mysql.connector.cursor import MySQLCursor
-        from databases.config import test_host, test_user, test_password, test_database
-        
-        df = pd.read_csv('../data/test_data.csv')
+    #     df = pd.read_csv('../data/test_data.csv')
 
-        # Extract data for temperature, humidity, and light
-        temperature = df['temperature']
-        humidity = df['humidity']
-        light = df['light_percentage']
+    #     # Extract data for temperature, humidity, and light
+    #     temperature = df['temperature']
+    #     humidity = df['humidity']
+    #     light = df['light_percentage']
         
-        # Establish connection to test_db
-        local_connection: MySQLConnection = connect(
-            host = test_host,
-            user = test_user,
-            password = test_password,
-            database = test_database
-        )
+    #     # Establish connection to test_db
+    #     local_connection: MySQLConnection = connect(**self.db_config)
         
-        local_cursor: MySQLCursor = local_connection.cursor()
-        print("Connected to test database!")
+    #     local_cursor: MySQLCursor = local_connection.cursor()
+    #     print("Connected to test database!")
         
-        # Recursively add data to test_db, simulating data entering from the incoming serial data
-        for row in df:
-            # Make a query
-            print()
+    #     # Recursively add data to test_db, simulating data entering from the incoming serial data
+    #     for row in df:
+    #         # Make a query
+    #         print()
             
-        local_cursor.close()
-        local_connection.close()        
-    
-    def parseAdd(self, data:str) -> None:
-        '''
-        Receives a string of data, which is the incoming serial flow from the sensoring module.
-        Parse the data and add it to the corresponding local database and tables.
-        '''
-        
-        # PARSING LOGIC MISSING
-        pass
-    
+    #     local_cursor.close()
+    #     local_connection.close()        
+
     #################### END -> Parse and add to local ####################
-    
+
+    #################### START -> CSV Generator ####################
+
+    def csv_generator(self) -> None:
+        if self.managerType != 'cloud':
+            raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
+        try:
+            header = ['ID','batch_number','device_number','date','time','x_coordinate','y_coordinate','temperature','humidity','light_percentage']
+            Previous_Date = datetime.today()
+
+            # Open the CSV file in write mode
+            with open('./analysis/temp/tempData.csv', 'a', newline='') as tempData:
+                csvwriter = csv.writer(tempData)
+                csvwriter.writerow(header)
+
+                # Connect to the MySQL database
+                connection = mysql.connector.connect(**self.db_config)
+                cursor = connection.cursor()
+
+                # Convert startDate and endDate to MySQL type for query
+                startDate = Previous_Date
+                mysql_startDate = startDate.strftime("%Y-%m-%d")
+
+                endDate = Previous_Date
+                mysql_endDate = endDate.strftime("%Y-%m-%d")
+
+                # Define and execute the SELECT query
+                select_query = f"SELECT * FROM sensor_data WHERE date >= '{mysql_startDate}' AND date <= '{mysql_endDate}';"
+                cursor.execute(select_query)
+
+                # Fetch all rows from the query result
+                rows = cursor.fetchall()
+
+                # Write the rows to the CSV file
+                for row in rows:
+                    csvwriter.writerow(row)
+        
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            print("CSV file generated successfully.")
+                
+    #################### END -> CSV Generator ####################
+
     #################### START -> Main functionality of manager ####################
     
     def receiver(self) -> None:
         '''
         Run when using 'local' manager in order to listen for incoming data streams to be stored in local database (later to be pushed to cloud)
-        '''
-        medway: MySQLConnection = connect(
-        host="127.0.0.1",
-        user="root",
-        password="",
-        database="medway"
-    )   
-
+        '''  
         if self.managerType != 'local':
-            raise ValueError('CLoud manager cannot alter local database. Create local manager to modify local database.')
-        
-        medway_cursor: MySQLCursor = medway.cursor()
-        print("Connected to local database")
+            raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
 
-        #Open a serial port that is connected to an Arduino
-        #Program will wait until all serial data is received from Arduino
-        #Port description will vary according to operating system. Linux will be in the form /dev/ttyXXXX and Windows and MAC will be COMX.
-        serialCom = serial.Serial(port='COM4', baudrate=9600)
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            cursor = connection.cursor()
+            print("Connected to local database")
 
-        #Write out a single character encoded in utf-8; this is defalt encoding for Arduino serial comms
-        #This character tells the Arduino to start sending data
-        serialCom.write(bytes('x','utf-8'))
-        while True:
-    #Read in data from Serial until (new line) received
-            serialCom_bytes = serialCom.readline()
-        
-            #Convert received bytes to text format and take out the new line characters and spaces
-            decoded_bytes = (serialCom_bytes[0:len(serialCom_bytes)-2].decode("utf-8").strip('\r\n\n'))
+            #Open a serial port that is connected to an Arduino
+            #Program will wait until all serial data is received from Arduino
+            #Port description will vary according to operating system. Linux will be in the form /dev/ttyXXXX and Windows and MAC will be COMX.
             
-            #Retreive current time and date
-            c = datetime.now()
-            current_time = c.strftime('%H:%M:%S')
-            current_date = c.strftime('%Y-%m-%d')   
-            flag = current_time
-            #If Arduino has sent a string "stop", exit loop
-            if (decoded_bytes == "NAN"):
-                print("Error en el sensor")
-                break
-            #Split the row string into a list of elements
-            row = (decoded_bytes)
-            row_elements = row.split(",")
-            batch_number = 195251
-            device_number = 729864
-            x_cordinate = 20.733070
-            y_cordinate = -103.456055
-            sql = "INSERT INTO sensor_data (batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-            data = (int(batch_number),int(device_number),current_date,current_time,x_cordinate,y_cordinate,float(row_elements[0]), float(row_elements[1]), float(row_elements[2]))
-            medway_cursor.execute(sql,data)
+            port = serial.Serial(port='COM3', baudrate=9600)
+            if port.isOpen() == False:
+                port.open()
+            #Write out a single character encoded in utf-8; this is defalt encoding for Arduino serial comms
+            #This character tells the Arduino to start sending data
+            port.write(bytes('x','utf-8'))
+            while True:
+        #Read in data from Serial until (new line) received
+                port_bytes = port.readline()
+            
+                #Convert received bytes to text format and take out the new line characters and spaces 
+                decoded_bytes = (port_bytes[0:len(port_bytes)-2].decode("utf-8").strip('\r\n\n'))
+                
+                #Retreive current time and date
+                c = datetime.now()
+                current_time = c.strftime('%H:%M:%S')
+                current_date = c.strftime('%Y-%m-%d')   
 
-            # Commit the changes to the database
-            medway.commit()
+                #Split the row string into a list of elements
+                row = (decoded_bytes)
+                row_elements = row.split(",")
+                batch_number = 195251
+                device_number = 729864
+                sql = "INSERT INTO sensor_data (batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                data = (int(batch_number),int(device_number),current_date,current_time,float(row_elements[0]),float(row_elements[1]),float(row_elements[2]), float(row_elements[3]), float(row_elements[4]))
+                cursor.execute(sql,data)
 
-        # Close port and medway local database
-        serialCom.close()
-        # medwaydata.close()
-        medway_cursor.close()
-        medway.close()
-        print("Done")
-        # Receive incoming data stream
-        
-        # Parse data stream
-        
-        # Check for data alerts to be sent to corresponding database
-        
-        # Send to local database
+                # Commit the changes to the database
+                connection.commit()
+                
+                # Check if the current time has exceeded the start time + duration
+                if self.send_to_cloud():
+                    self.sender() # Send the data to the cloud
+                    print("Done uploading to cloud")
+                if self.make_csv():
+                    self.csv_generator()
+        except Error as e:
+                print(f"Error: {e}")
+        finally:
+            if connection.is_connected():
+                connection.close()
+            if port.isOpen() == True:
+                port.close()
         
     def sender(self) -> None:
         '''
         Calls push data functions to upload local batch to the cloud.
         '''
+        startID = 0
+        endID = 0
         # Since the local database is constantly changing we should determine a range to push and upload that, since pushing 'all' could cause problems
         # Get the ID range to push the sensor data
-        
-        # Get the alert number range to push the alert data
-        
-        # Get the the date and time range for the position data alert
-        pass
-
+        if self.managerType != 'local':
+            print('Create local manager to modify local database.')  
+        else:
+            try:  
+                connection = mysql.connector.connect(**self.db_config)
+                cursor = connection.cursor()
+                checkid_query = "SELECT MIN(id) AS startID, MAX(id) AS endID FROM sensor_data"
+                cursor.execute(checkid_query)
+                result = cursor.fetchone()
+                startID = result[0]
+                endID = result[1]
+                self.pushSensorData(startID,endID)
+            except Error as e:
+                    print(f"Error: {e}")
+            finally:
+                if connection.is_connected():
+                    self.removeSensorData(startID,endID)
+                    reset_query = f"ALTER TABLE sensor_data AUTO_INCREMENT = 1;"
+                    cursor.execute(reset_query)
+                    print("Done")
+                    connection.close()
+                    connection.close() 
+            
+            
     #################### END-> Main functionality of manager ####################

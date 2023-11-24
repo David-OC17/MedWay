@@ -27,9 +27,6 @@ from dotenv import load_dotenv
 import csv
 import os
 
-
-from config import Config
-
 load_dotenv()
 
 class MySQLmanager:

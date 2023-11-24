@@ -17,7 +17,7 @@ or 'aws' option for a cloud database manager.
 
 import mysql.connector
 from mysql.connector import Error
-from datetime import date, datetime
+from datetime import date, datetime,timedelta
 from mysql.connector import connect
 from time import strftime, time
 from allQueryResult import QueryResult
@@ -31,7 +31,6 @@ import os
 from config import Config
 
 load_dotenv()
-
 
 class MySQLmanager:
     def send_to_cloud(self):
@@ -47,11 +46,11 @@ class MySQLmanager:
     
     def make_csv(self):
         # Set the time duration to 24 hours (in hours)
-        duration = 24 * 60 * 60
+        duration = 24*60*60
 
         # Check if the current time has exceeded the start time + duration
-        if time() - self.__start_time > duration:
-            self.__start_time = time()
+        if time() - self.__start_time2 > duration:
+            self.__start_time2 = time()
             return True
         
         return False
@@ -77,25 +76,22 @@ class MySQLmanager:
                 'password': os.getenv("LOCAL_PASSWORD"),
                 'database': os.getenv("LOCAL_DATABASE")
             }
-        elif (managerType == 'local_test'):
-            self.managerType = managerType
-            self.db_config = {
-                'host': os.getenv("TEST_HOST"),
-                'user': os.getenv("TEST_USER"),
-                'password': os.getenv("TEST_PASSWORD"),
-                'database': os.getenv("TEST_DATABASE")
-            }
+        # elif (managerType == 'local_test'):
+        #     self.managerType = managerType
+        #     self.db_config = {
+        #         'host': os.getenv("TEST_HOST"),
+        #         'user': os.getenv("TEST_USER"),
+        #         'password': os.getenv("TEST_PASSWORD"),
+        #         'database': os.getenv("TEST_DATABASE")
+        #     }
         else:
             raise ValueError("No suitable manager type for constructor of MySQLmanager. Use 'cloud' or 'local'.")
         
+        #Get the times for the send and csv generator timing
         self.__start_time = time()
+        self.__start_time2 = time()
 
-    #################### START -> Create tables and stablish relationship ####################
-
-    def create_tables(self) -> None:
-        '''
-        Run once, to create the tables in the database
-        '''
+    #################### START -> Create sensor table ####################
         self.create_sensor_data_table()
         
     def create_sensor_data_table(self) -> None:
@@ -183,7 +179,7 @@ class MySQLmanager:
             """
             
             # Execute the query with data_list as a list of tuples
-            data_list = self.fetch_data_from_database(starID, endID)
+            data_list = local.fetch_data_from_database(starID, endID)
             cursor.executemany(insert_query, data_list)
             
             connection.commit()
@@ -276,55 +272,55 @@ class MySQLmanager:
     Provides the ability to query all tables all at once for a given date range or batch number.
     '''
     
-    def queryAllByDate(self, startDate:date, endDate:date) -> QueryResult:
-        '''
-        query cloud database for all the data corresponding to the given dates.
-        Return a class queryResult with numpy arrays with the information.
-        '''
-        if self.managerType != 'cloud':
-            raise ValueError('Only cloud manager can interact with RDS cloud. Create a cloud manager to access.')
+    # def queryAllByDate(self, startDate:date, endDate:date) -> QueryResult:
+    #     '''
+    #     query cloud database for all the data corresponding to the given dates.
+    #     Return a class queryResult with numpy arrays with the information.
+    #     '''
+    #     if self.managerType != 'cloud':
+    #         raise ValueError('Only cloud manager can interact with RDS cloud. Create a cloud manager to access.')
 
         
-        # The function connect to the cloud and makes two queries, one for the sensor data table and one for the batch alerts table
-        # It generates a QueryResult type where it stores the query result
-        try:
-            # Convert startDate and endDate to MySQL type for query
-            startDate = datetime.strptime(startDate, "%d%b%Y")
-            mysql_startDate = startDate.strftime("%Y-%m-%d")
+    #     # The function connect to the cloud and makes two queries, one for the sensor data table and one for the batch alerts table
+    #     # It generates a QueryResult type where it stores the query result
+    #     try:
+    #         # Convert startDate and endDate to MySQL type for query
+    #         startDate = datetime.strptime(startDate, "%d%b%Y")
+    #         mysql_startDate = startDate.strftime("%Y-%m-%d")
             
-            endDate = datetime.strptime(endDate, "%d%b%Y")
-            mysql_endDate = startDate.strftime("%Y-%m-%d")
+    #         endDate = datetime.strptime(endDate, "%d%b%Y")
+    #         mysql_endDate = startDate.strftime("%Y-%m-%d")
         
             
-            # Define query where date between startDate and endDate
-            select_query = f"SELECT * FROM sensor_data WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
+    #         # Define query where date between startDate and endDate
+    #         select_query = f"SELECT * FROM sensor_data WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
                               
-            cursor.execute(select_query)
+    #         cursor.execute(select_query)
             
 
-            # '''
-            # self.sensor_data_dtype =  np.dtype([
-            #     ('ID', np.int64),
-            #     ('batch_number', np.int64),
-            #     ('device_number', np.int64),
-            #     ('date', 'datetime64[D]'),  # Using datetime64[D] for date
-            #     ('temperature', np.float64),
-            #     ('humidity', np.float64),
-            #     ('light_percentage', np.float64),
-            #     ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
-            #     ('x_coordinate', np.float64),
-            #     ('y_coordinate', np.float64)
-            # ])
+    #         # '''
+    #         # self.sensor_data_dtype =  np.dtype([
+    #         #     ('ID', np.int64),
+    #         #     ('batch_number', np.int64),
+    #         #     ('device_number', np.int64),
+    #         #     ('date', 'datetime64[D]'),  # Using datetime64[D] for date
+    #         #     ('temperature', np.float64),
+    #         #     ('humidity', np.float64),
+    #         #     ('light_percentage', np.float64),
+    #         #     ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
+    #         #     ('x_coordinate', np.float64),
+    #         #     ('y_coordinate', np.float64)
+    #         # ])
             
-            # '''
-            # sensor_data_df = pd.DataFrame(cursor.fetchall())
-            # result = QueryResult()
-        except Error as e:
-            print(f"Error: {e}")
-        finally:
-            if connection.is_connected():
-                cursor.close()
-                connection.close()
+    #         # '''
+    #         # sensor_data_df = pd.DataFrame(cursor.fetchall())
+    #         # result = QueryResult()
+    #     except Error as e:
+    #         print(f"Error: {e}")
+    #     finally:
+    #         if connection.is_connected():
+    #             cursor.close()
+    #             connection.close()
     
     #################### END -> query tables ####################
 
@@ -366,14 +362,19 @@ class MySQLmanager:
     #################### START -> CSV Generator ####################
 
     def csv_generator(self) -> None:
+        
         if self.managerType != 'cloud':
             raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
         try:
+            print("Generating CSV file...")
             header = ['ID','batch_number','device_number','date','time','x_coordinate','y_coordinate','temperature','humidity','light_percentage']
-            Previous_Date = datetime.today()
+            
+            # Get the previous date
+            current_date = datetime.today()
+            previous_Date = current_date - timedelta(days=1)   
 
             # Open the CSV file in write mode
-            with open('./analysis/temp/tempData.csv', 'a', newline='') as tempData:
+            with open('./analysis/temp/tempData.csv', 'w', newline='') as tempData:
                 csvwriter = csv.writer(tempData)
                 csvwriter.writerow(header)
 
@@ -382,16 +383,16 @@ class MySQLmanager:
                 cursor = connection.cursor()
 
                 # Convert startDate and endDate to MySQL type for query
-                startDate = Previous_Date
+                startDate = previous_Date
                 mysql_startDate = startDate.strftime("%Y-%m-%d")
 
-                endDate = Previous_Date
+                endDate = previous_Date
                 mysql_endDate = endDate.strftime("%Y-%m-%d")
 
                 # Define and execute the SELECT query
                 select_query = f"SELECT * FROM sensor_data WHERE date >= '{mysql_startDate}' AND date <= '{mysql_endDate}';"
                 cursor.execute(select_query)
-
+                
                 # Fetch all rows from the query result
                 rows = cursor.fetchall()
 
@@ -402,8 +403,11 @@ class MySQLmanager:
         except Error as e:
             print(f"Error: {e}")
         finally:
-            print("CSV file generated successfully.")
-                
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+                print("CSV file generated successfully.")
+
     #################### END -> CSV Generator ####################
 
     #################### START -> Main functionality of manager ####################
@@ -456,10 +460,11 @@ class MySQLmanager:
                 
                 # Check if the current time has exceeded the start time + duration
                 if self.send_to_cloud():
-                    self.sender() # Send the data to the cloud
+                    cloud.sender() # Send the data to the cloud
                     print("Done uploading to cloud")
-                if self.make_csv():
-                    self.csv_generator()
+                    if self.make_csv():
+                        cloud.csv_generator()
+                
         except Error as e:
                 print(f"Error: {e}")
         finally:
@@ -467,7 +472,7 @@ class MySQLmanager:
                 connection.close()
             if port.isOpen() == True:
                 port.close()
-        
+
     def sender(self) -> None:
         '''
         Calls push data functions to upload local batch to the cloud.
@@ -487,12 +492,12 @@ class MySQLmanager:
                 result = cursor.fetchone()
                 startID = result[0]
                 endID = result[1]
-                self.pushSensorData(startID,endID)
+                local.pushSensorData(startID,endID)
             except Error as e:
                     print(f"Error: {e}")
             finally:
                 if connection.is_connected():
-                    self.removeSensorData(startID,endID)
+                    local.removeSensorData(startID,endID)
                     reset_query = f"ALTER TABLE sensor_data AUTO_INCREMENT = 1;"
                     cursor.execute(reset_query)
                     print("Done")
@@ -501,3 +506,10 @@ class MySQLmanager:
             
             
     #################### END-> Main functionality of manager ####################
+
+
+
+# To run uncomment:
+# local = MySQLmanager('local') 
+# cloud = MySQLmanager('cloud')
+# local.receiver()

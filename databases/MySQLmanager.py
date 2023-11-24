@@ -29,29 +29,7 @@ import os
 
 load_dotenv()
 
-class MySQLmanager:
-    def send_to_cloud(self):
-        # Set the time duration to 30 minutes (in seconds)
-        duration = 30 * 60
-
-        # Check if the current time has exceeded the start time + duration
-        if time() - self.__start_time > duration:
-            self.__start_time = time()
-            return True
-        
-        return False
-    
-    def make_csv(self):
-        # Set the time duration to 24 hours (in hours)
-        duration = 24*60*60
-
-        # Check if the current time has exceeded the start time + duration
-        if time() - self.__start_time2 > duration:
-            self.__start_time2 = time()
-            return True
-        
-        return False
-            
+class MySQLmanager:            
     def __init__(self, managerType: str) -> None:
         '''
         managerType: 'cloud' = 'aws' or 'local'
@@ -73,14 +51,6 @@ class MySQLmanager:
                 'password': os.getenv("LOCAL_PASSWORD"),
                 'database': os.getenv("LOCAL_DATABASE")
             }
-        # elif (managerType == 'local_test'):
-        #     self.managerType = managerType
-        #     self.db_config = {
-        #         'host': os.getenv("TEST_HOST"),
-        #         'user': os.getenv("TEST_USER"),
-        #         'password': os.getenv("TEST_PASSWORD"),
-        #         'database': os.getenv("TEST_DATABASE")
-        #     }
         else:
             raise ValueError("No suitable manager type for constructor of MySQLmanager. Use 'cloud' or 'local'.")
         
@@ -90,6 +60,28 @@ class MySQLmanager:
 
     #################### START -> Create sensor table ####################
         self.create_sensor_data_table()
+        
+    def send_to_cloud(self):
+        # Set the time duration to 30 minutes (in seconds)
+        duration = 30 * 60
+
+        # Check if the current time has exceeded the start time + duration
+        if time() - self.__start_time > duration:
+            self.__start_time = time()
+            return True
+        
+        return False
+    
+    def make_csv(self):
+        # Set the time duration to 24 hours (in hours)
+        duration = 24*60*60
+
+        # Check if the current time has exceeded the start time + duration
+        if time() - self.__start_time2 > duration:
+            self.__start_time2 = time()
+            return True
+        
+        return False   
         
     def create_sensor_data_table(self) -> None:
         try:
@@ -264,98 +256,6 @@ class MySQLmanager:
         
     #################### END -> Delete from local ####################
     
-    #################### START -> query tables ####################
-    '''
-    Provides the ability to query all tables all at once for a given date range or batch number.
-    '''
-    
-    # def queryAllByDate(self, startDate:date, endDate:date) -> QueryResult:
-    #     '''
-    #     query cloud database for all the data corresponding to the given dates.
-    #     Return a class queryResult with numpy arrays with the information.
-    #     '''
-    #     if self.managerType != 'cloud':
-    #         raise ValueError('Only cloud manager can interact with RDS cloud. Create a cloud manager to access.')
-
-        
-    #     # The function connect to the cloud and makes two queries, one for the sensor data table and one for the batch alerts table
-    #     # It generates a QueryResult type where it stores the query result
-    #     try:
-    #         # Convert startDate and endDate to MySQL type for query
-    #         startDate = datetime.strptime(startDate, "%d%b%Y")
-    #         mysql_startDate = startDate.strftime("%Y-%m-%d")
-            
-    #         endDate = datetime.strptime(endDate, "%d%b%Y")
-    #         mysql_endDate = startDate.strftime("%Y-%m-%d")
-        
-            
-    #         # Define query where date between startDate and endDate
-    #         select_query = f"SELECT * FROM sensor_data WHERE date >= {mysql_startDate} AND date <= {mysql_endDate};"
-                              
-    #         cursor.execute(select_query)
-            
-
-    #         # '''
-    #         # self.sensor_data_dtype =  np.dtype([
-    #         #     ('ID', np.int64),
-    #         #     ('batch_number', np.int64),
-    #         #     ('device_number', np.int64),
-    #         #     ('date', 'datetime64[D]'),  # Using datetime64[D] for date
-    #         #     ('temperature', np.float64),
-    #         #     ('humidity', np.float64),
-    #         #     ('light_percentage', np.float64),
-    #         #     ('time', 'timedelta64[s]'),  # Using timedelta64[s] for time
-    #         #     ('x_coordinate', np.float64),
-    #         #     ('y_coordinate', np.float64)
-    #         # ])
-            
-    #         # '''
-    #         # sensor_data_df = pd.DataFrame(cursor.fetchall())
-    #         # result = QueryResult()
-    #     except Error as e:
-    #         print(f"Error: {e}")
-    #     finally:
-    #         if connection.is_connected():
-    #             cursor.close()
-    #             connection.close()
-    
-    #################### END -> query tables ####################
-
-    #################### START -> Parse and add to local ####################
-    
-    # def parseAdd_TEST(self) -> None:
-    #     '''
-    #     TEST METHOD, DO NOT USE DURING PRODUCTION
-    #     Receives a string of data, which is the incoming serial flow from the sensoring module.
-    #     Parse the data and add it to the corresponding local database and tables.
-    #     '''
-        
-    #     if self.managerType != 'local_test':
-    #         raise ValueError('Local or cloud managers cannot alter test database. Create test manager to modify test_db.')
-        
-    #     df = pd.read_csv('../data/test_data.csv')
-
-    #     # Extract data for temperature, humidity, and light
-    #     temperature = df['temperature']
-    #     humidity = df['humidity']
-    #     light = df['light_percentage']
-        
-    #     # Establish connection to test_db
-    #     local_connection: MySQLConnection = connect(**self.db_config)
-        
-    #     local_cursor: MySQLCursor = local_connection.cursor()
-    #     print("Connected to test database!")
-        
-    #     # Recursively add data to test_db, simulating data entering from the incoming serial data
-    #     for row in df:
-    #         # Make a query
-    #         print()
-            
-    #     local_cursor.close()
-    #     local_connection.close()        
-
-    #################### END -> Parse and add to local ####################
-
     #################### START -> CSV Generator ####################
 
     def csv_generator(self) -> None:
@@ -501,10 +401,10 @@ class MySQLmanager:
                     connection.close()
                     connection.close() 
             
-            
     #################### END-> Main functionality of manager ####################
 
-# To run uncomment:
-# local = MySQLmanager('local') 
-# cloud = MySQLmanager('cloud')
-# local.receiver()
+if __name__== '__main__':
+    # To run uncomment:
+    local = MySQLmanager('local') 
+    cloud = MySQLmanager('cloud')
+    local.receiver()

@@ -1,5 +1,6 @@
 #----------------------------------#
 # Other
+.vscode
 /databases/config.py
 /test/databaseConnection/config.py
 # Change from config.py --> .env

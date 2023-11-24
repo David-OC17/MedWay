@@ -356,6 +356,7 @@ class MySQLmanager:
 
     #################### END -> Parse and add to local ####################
 
+    
     #################### START -> CSV Generator ####################
 
     def csv_generator(self) -> None:

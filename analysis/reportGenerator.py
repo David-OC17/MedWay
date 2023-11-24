@@ -147,10 +147,90 @@ def conditionStatistics(withStats:bool=True, testing:bool=False, show:bool=False
     
     return (minTemp, maxTemp, minHum, maxHum, minLight, maxLight)
 
-def createStateTable(states:map) -> None:
-    pass
+# def createStateTable(states: list) -> str:
+#     '''
+#     Populate the state table by generating a big string that goes inside the <<STATE_TABLE>> placeholder
+#     '''
+    
+#     stateTable: str = "\\begin{table}[ht]\n"
+#     stateTable += "    \\centering\n"
+#     stateTable += "    \\begin{tabular}{|c|c|c|c|}\n"
+#     stateTable += "        \\hline\n"
+#     stateTable += "        \\textbf{Batch Number (Prev)} & \\textbf{Batch State (Prev)} & \\textbf{Batch Number (Curr)} & \\textbf{Batch State (Curr)} \\\\\n"
+#     stateTable += "        \\hline\n"
 
-def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, badBatches:int, minTemp:float, maxTemp:float, minHum:float, maxHum:float, minLight:float, maxLight:float) -> None:
+#     prevBatchNum, prevBatchState = "", ""
+#     add = False
+    
+#     for batchNum, batchState in states.items():
+#         if add:
+#             # Assuming states is a list of tuples with two elements each
+#             row = f"        {prevBatchNum} & {prevBatchState} & {batchNum} & {batchState} \\\\\n"
+#             stateTable += row
+#             prevBatchNum, prevBatchState = "", ""
+#         else: continue
+
+#     stateTable += "        \\hline\n"
+#     stateTable += "    \\end{tabular}\n"
+#     stateTable += "    \\caption{Batch States}\n"
+#     stateTable += "    \\label{tab:batch_states}\n"
+#     stateTable += "\\end{table}"
+
+#     return stateTable
+
+def createStateTable(states: dict) -> str:
+    '''
+    Populate the state table by generating a big string that goes inside the <<STATE_TABLE>> placeholder
+    '''
+    
+    stateTable: str = "\\begin{table}[ht]\n"
+    stateTable += "    \\centering\n"
+    stateTable += "    \\begin{tabular}{|c|c|}\n"
+    stateTable += "        \\hline\n"
+    stateTable += "        \\textbf{Batch Number} & \\textbf{Batch State Prediction} \\\\\n"
+    stateTable += "        \\hline\n"
+
+    colorCommand = "\\textcolor"
+    for batchNum, batchState in states.items():
+        if batchState:
+            color = 'green'
+            state = "Good"
+            colorSection = colorCommand + f"{{{color}}}{{{state}}}"
+        else:
+            color = 'red'
+            state = "Good"
+            colorSection = colorCommand + f"{{{color}}}{{{state}}}"
+        row = f"        {batchNum} & {colorSection} \\\\\n"
+        stateTable += row
+
+    stateTable += "        \\hline\n"
+    stateTable += "    \\end{tabular}\n"
+    stateTable += "    \\caption{Batch States}\n"
+    stateTable += "    \\label{tab:batch_states}\n"
+    stateTable += "\\end{table}"
+
+    return stateTable
+
+def createStateString(states:dict) -> str:
+    '''
+    Create a string of the batch numbers colored either green or red, for good or bad condition, respectively.
+    '''
+    
+    colorCommand = "\\textcolor"
+    resultString = ""
+    for batchNum, batchState in states.items():
+        if batchState:
+            color = 'myGreen'
+            resultString += colorCommand + f"{{{color}}}{{{batchNum}}}\n"
+            print(resultString)
+        else:
+            color = 'myRed'
+            resultString += colorCommand + f"{{{color}}}{{{batchNum}}}\n"
+    
+    return resultString
+    
+
+def generatePDF(product:str, passed:map, alertCount:int, numBatches:int, goodBatches:int, badBatches:int, minTemp:float, maxTemp:float, minHum:float, maxHum:float, minLight:float, maxLight:float) -> None:
     '''
     Takes the appropriate template, adds the dynamic data, compiles into a `.pdf` document.
     '''
@@ -164,7 +244,10 @@ def generatePDF(product:str, alertCount:int, numBatches:int, goodBatches:int, ba
     percGoodBatches = (goodBatches / numBatches) * 100
     percBadBatches = (badBatches / numBatches) * 100
     periodType = 'daily'
-    
+
+    stateList = createStateString(passed)
+        
+    template_content = template_content.replace("<<STATE_LIST>>", str(stateList))
     template_content = template_content.replace("<<PRODUCT>>", str(product))
     template_content = template_content.replace("<<PERIOD_TYPE>>", str(periodType))
     template_content = template_content.replace("<<GOOD_BATCHES>>", str(goodBatches))

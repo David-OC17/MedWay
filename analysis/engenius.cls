@@ -152,6 +152,7 @@ title=#1}
     \smash{\rlap{\textcolor[RGB]{\dep@redT,\dep@greenT,\dep@blueT}{\vrule width \textwidth height 20.000mm depth -16mm}}}
     
     % Title
+    \vspace{-8mm}
     \begin{multicols}{2}
     \begin{FlushLeft}
     {\LARGE \textbf{\@title} \\ \Large\textbf{\@titletwo}\columnbreak}
@@ -166,6 +167,7 @@ title=#1}
     \end{multicols}
 
     % Authors
+    \vspace{-8mm}
     \begin{center}
     {\large
       \lineskip .5em%
@@ -175,7 +177,7 @@ title=#1}
     \end{center}
 
     \noindent\hrulefill
-    \vspace*{1\baselineskip}
+    \vspace*{0.3\baselineskip}
     
     \end{@twocolumnfalse}
 ]

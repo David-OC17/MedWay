@@ -6,6 +6,14 @@
 
 \documentclass[daily]{engenius}
 
+\usepackage{float} % For the 'H' option
+
+\usepackage{xcolor}
+\definecolor{myGreen}{RGB}{12,130,21}
+\definecolor{myRed}{RGB}{80,15,6}
+
+\titlespacing*{\section}{0pt}{0ex plus 1ex minus 0.2ex}{0ex plus 0.2ex}
+
 % Fill the document parameters
 % Remove \titletwo if you want one title
 % You can remove authors by deleting then
@@ -29,25 +37,15 @@
 
 \begin{abstract}
 
-The report includes information for the batches in transportation, up to the given date. For the {<<PERIOD_TYPE>>} period, {<<NUM_ALERTS>>} were triggered. Up to this data, \textbf{GOOD\_BATCHES} batches are predicted to be in good condition and \textbf{BAD\_BATCHES} in bad condition, from the \textbf{TOTAL\_BATCHES} total batches.
+The report includes information for the batches in transportation, up to the given date. For the {<<PERIOD_TYPE>>} period, {<<NUM_ALERTS>>} alerts were triggered. Up to this data, {<<GOOD_BATCHES>>} batches are predicted to be in good condition and {<<BAD_BATCHES>>} in bad condition, from the {<<TOTAL_BATCHES>>} total batches.
 
 \end{abstract}
 
 %%--------------------%%
 
 \section{Categories per batch}
-The model predicts the following classes for the given {<<TOTAL_BATCHES>>} in the period.
-
-% Show graphics of the classification of the different batches
-\begin{figure}[!ht]
-    \begin{center}
-        % Modify direction of the imgs -> images directory
-        \includegraphics[width=\textwidth/3]{./images/logo2.png}
-        \caption{Batch classification}
-        \label{img:engeniuslogo}
-    \end{center}
-\end{figure}
-
+The model predicts the following states for the given {<<TOTAL_BATCHES>>} batches in the period (Green = passed analysis, Red = did not pass analysis). \\
+{<<STATE_LIST>>} \\
 According to model classification, {<<PERC_GOOD_BATCHES>>}\% have been handled well and {<<PERC_BAD_BATCHES>>}\% have been mistreated or have suffered some mishap during their journey.
 
 %%--------------------%%
@@ -58,26 +56,24 @@ According to model classification, {<<PERC_GOOD_BATCHES>>}\% have been handled w
 The temperature average of all the batches during the period was, as the next figure shows.
 
 % Show plot of the temperature average over time
-\begin{figure}[!ht]
+\begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth/2]{./temp/temperature_plot.png}
         \caption{Temperature over time}
-        \label{img:engeniuslogo}
     \end{center}
 \end{figure}
 
 %%--------------------%%
-
+\vspace{5mm}
 \subsubsection{Humidity}
 
 The humidity average of all the batches during the period was, as the next figure shows.
 
 % Show plot of the temperature average over time
-\begin{figure}[!ht]
+\begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth/2]{./temp/humidity_plot.png}
         \caption{Humidity over time}
-        \label{img:engeniuslogo}
     \end{center}
 \end{figure}
 
@@ -88,11 +84,10 @@ The humidity average of all the batches during the period was, as the next figur
 The UV light average of all the batches during the period was, as the next figure shows.
 
 % Show plot of the temperature average over time
-\begin{figure}[!ht]
+\begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth/2]{./temp/light_plot.png}
         \caption{UV Light over time}
-        \label{img:engeniuslogo}
     \end{center}
 \end{figure}
 

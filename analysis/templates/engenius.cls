@@ -28,6 +28,8 @@
 % Header/Footers
 \RequirePackage{fancyhdr}
 
+\RequirePackage{xcolor}
+
 
 % Column Uttility
 \RequirePackage{multicol}
@@ -60,13 +62,6 @@
     \def\dep@textA{Daily}
     \def\dep@textB{Status Report}}
 
-\DeclareOption{weekly}{\dep@ec
-    \let\dep@redT=\dep@red
-    \let\dep@greenT=\dep@green
-    \let\dep@blueT=\dep@blue
-    \def\dep@textA{Weekly}
-    \def\dep@textB{Status Report}}
-
 \DeclareOption{monthly}{\dep@ec
     \let\dep@redT=\dep@red
     \let\dep@greenT=\dep@green
@@ -88,9 +83,6 @@
 
 % Departments definitions
 \def\depofec{Daily Status Report}
-\def\depofeccolor{\dep@ec\textcolor[RGB]{\dep@red,\dep@green,\dep@blue}{\vrule width 14mm height 1.000mm depth 0mm}}
-
-\def\depofec{Weekly Status Report}
 \def\depofeccolor{\dep@ec\textcolor[RGB]{\dep@red,\dep@green,\dep@blue}{\vrule width 14mm height 1.000mm depth 0mm}}
 
 \def\depofec{Monthly Status Report}

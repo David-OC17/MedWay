@@ -6,7 +6,7 @@ These arrays may be later used for easy data analysis.
 
 import numpy as np
 
-class QuerryResult:
+class QueryResult:
     def __init__(self, querryType: str) -> None:
         '''
         Provide a querry type to create attributes for the corresponding querries.

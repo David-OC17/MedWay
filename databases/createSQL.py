@@ -1,4 +1,4 @@
-from MySQLcloudManager import MySQLmanager
+from databases.MySQLmanager import MySQLmanager
 
 # Create the original tables in the database
 if __name__ == "__main__":

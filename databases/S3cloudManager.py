@@ -9,6 +9,11 @@ The bucket is divided into 3 main folders:
 Use the provided methods as appropiate to add and retreive files.
 '''
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 class S3manager:
     '''
     Use this class in order to administer the remote (cloud based) AWS-S3 bucket for analytics reports.
@@ -48,3 +53,19 @@ class S3manager:
         pass
     
     #################### END -> Download files ####################
+    
+    
+    '''
+    import boto3
+
+    s3_client = boto3.client('s3')
+
+    # we need the bucket name
+
+    s3 = boto3.resource("s3")
+    s3.Bucket(bucket_name).put_object() # put the result report into the bucket
+    # .put_object(key = key_name, Body = report )
+
+    # configure accessible to other elements in AWS
+        
+    '''

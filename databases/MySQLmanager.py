@@ -264,6 +264,7 @@ class MySQLmanager:
         
     #################### END -> Delete from local ####################
     
+<<<<<<< HEAD
     #################### START -> query tables ####################
     '''
     Provides the ability to query all tables all at once for a given date range or batch number.
@@ -356,6 +357,8 @@ class MySQLmanager:
 
     #################### END -> Parse and add to local ####################
 
+=======
+>>>>>>> 1cb764c (Modifications to README)
     #################### START -> CSV Generator ####################
 
     def csv_generator(self) -> None:

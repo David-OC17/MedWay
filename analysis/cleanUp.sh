@@ -11,4 +11,4 @@ rm ./temp/light_plot.png
 
 rm -r _minted-dailyReport
 
-rm ./reports/dailyReport.pdf
+mv./reports/dailyReport.pdf ./temp/

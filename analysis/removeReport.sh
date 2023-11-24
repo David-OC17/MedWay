@@ -1,0 +1,1 @@
+rm ./temp/dailyReport.pdf

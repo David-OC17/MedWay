@@ -34,15 +34,15 @@ class NavBar:
                     icon = ft.icons.HOME_OUTLINED,
                     selected_icon = ft.icons.HOME,
                 ),
-                # Week reports page button
+                # Daily reports page button
                 ft.NavigationDestination(
                     label = "Daily Rep.",
                     icon = ft.icons.DESCRIPTION_OUTLINED,
                     selected_icon = ft.icons.DESCRIPTION,
                 ),
-                # General reports page button
+                # Monthly reports page button
                 ft.NavigationDestination(
-                    label = "Week Rep.",
+                    label = "Monthly Rep.",
                     icon = ft.icons.COLLECTIONS_BOOKMARK_OUTLINED,
                     selected_icon = ft.icons.COLLECTIONS_BOOKMARK,
                 ),

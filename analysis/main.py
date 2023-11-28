@@ -7,11 +7,15 @@ The options for the analysis are:
 
 The implementation uses a XGboost. See the `About.md` file for more information.
 '''
-
+from boto3.session import Session
+from boto3 import client
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from stateAnalysis import analyzeState, trainAnalyzeState
 from reportGenerator import generatePDF, conditionStatistics, createStateTable
 import subprocess
 import argparse
+
+load_dotenv()
 
 if __name__ == '__main__':
     # Select the type of analysis to run (daily or monthly)
@@ -48,7 +52,38 @@ if __name__ == '__main__':
     #subprocess.run(['bash'], './cleanUp.sh')
     
     # Send the last .pdf report to the S3 bucket of its appropriate type
-    
+     if periodType == 'daily':
+        dia = datetime.now().strftime("%B %d")
+        local_pdf_path = './reports/dailyReport.pdf'
+        pdf_key = dia
+
+            
+    elif periodType == 'monthly':
+        mes = datetime.now().strftime("%B")
+        local_pdf_path = './reports/monthlyReport.pdf'
+        pdf_key = mes
+
+    try:
+        s3 = boto3.client('s3') 
+        self._s3_connection: Session = client()
+        self.db_config = {
+            'aws_access_key_id': os.getenv("AWS_ACCESS_KEY_ID"),
+            'aws_secret_access_key': os.getenv("AWS_SECRET_ACCESS_KEY"),
+            'region_name': os.getenv("REGION_NAME"),
+            'bucket_name' os.getenv: ("BUCKET_NAME")
+            
+
+            }
+
+        s3.upload_file(local_pdf_path, bucket_name, pdf_key)
+        print(f"Upload of PDF to S3 Successful")
+    except NoCredentialsError:
+        print("Credentials not available")
+    except PartialCredentialsError:
+        print("Credentials not available")
+    except Exception as e:
+        print(e)
+
     
     #subprocess.run(['bash'], './removeReport')
 

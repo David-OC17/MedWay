@@ -82,11 +82,11 @@ class SDailyReports:
         )
 
         # Get the files names from the S3 bucket
-        files: list[str] = s3_connection.get_file_names("daily_reports")
+        files: list[str] = s3_connection.get_file_names("daily")
 
         # Cards for the files are added to the list view
         for file in files:
-            file_card: ft.Container = FileCard().build_file_card(page, file, "daily_reports")
+            file_card: ft.Container = FileCard().build_file_card(page, file, "daily")
             _list_view.controls.append(file_card)
 
         # The list view is added to a container to create the file list

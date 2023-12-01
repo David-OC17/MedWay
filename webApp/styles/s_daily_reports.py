@@ -1,7 +1,5 @@
 
 import flet as ft
-from os.path import expanduser, join
-from botocore.exceptions import ClientError
 
 from styles.styles import Styles
 from other.file_card import FileCard
@@ -124,7 +122,7 @@ class SDailyReports:
         )
 
         # Get the file names from the S3 bucket
-        files: list[str] = s3_connection.get_file_names("daily_reports")
+        files: list[str] = s3_connection.get_file_names("daily")
 
         # Cards for the files are added to the list view
         for row in range((len(files) // 4) + 1):
@@ -132,7 +130,7 @@ class SDailyReports:
             for file in range(4):
                 # Prevents to raise an error if the the last row isn't complete
                 try:
-                    file_card: ft.Container = FileCard().build_file_card(page, files[_counter], "daily_reports")
+                    file_card: ft.Container = FileCard().build_file_card(page, files[_counter], "daily")
                     list_row.controls.append(file_card)
                     _counter += 1
                 except IndexError:

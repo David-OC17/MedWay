@@ -3,7 +3,7 @@ import flet as ft
 
 from views.home import Home
 from views.daily_reports import DailyReports
-from views.month_reports import MonthReports
+# from views.month_reports import MonthReports
 from views.analytics import Analytics
 
 
@@ -19,7 +19,7 @@ class Router:
         self.routes: dict[str, ft.Column] = {
             "/" : Home(page, date_time),                # Home page
             "/daily_reports" : DailyReports(page),      # Daily reports page
-            "/monthly_reports" : MonthReports(page),    # Monthly reports page
+            # "/monthly_reports" : MonthReports(page),    # Monthly reports page
             "/analytics" : Analytics(page),             # Analytics page
         }
         # Default route and page to be displayed

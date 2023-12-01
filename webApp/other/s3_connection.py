@@ -10,13 +10,18 @@ class S3Connection:
 
     Dependency requiered for web app and the mobile app
     """
+    '''
+    S3_ACCESS_KEY_ID = 
+    S3_SECRET_ACCESS_KEY = 
+    BUCKET_NAME = 
+    '''
 
     def __init__(self) -> None:
         # Connection to the S3 bucket
         self._s3_connection: Session = client(
             "s3",
-            aws_access_key_id = "AKIA5RCYKSQAPI3AKL3K",
-            aws_secret_access_key = "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",
+            aws_access_key_id = "AKIATSSHLUNW3P4HN56K",
+            aws_secret_access_key = "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",
             region_name = "us-east-2",
         )
         # Files in the S3 bucket
@@ -25,13 +30,13 @@ class S3Connection:
         self.__daily_reports: list[str] = [
             file["Key"].split("/")[-1].split(".")[0]
             for file in __files
-            if "daily_reports" in file["Key"] and file["Key"] != "daily_reports/"
+            if "daily" in file["Key"] and file["Key"] != "daily/"
         ]
         # Monthly reports
         self.__monthly_reports: list[str] = [
             file["Key"].split("/")[-1].split(".")[0]
             for file in __files
-            if "monthly_reports" in file["Key"] and file["Key"] != "monthly_reports/"
+            if "monthly" in file["Key"] and file["Key"] != "monthly/"
         ]
 
 
@@ -46,9 +51,9 @@ class S3Connection:
             - list[str]: The file names from the S3 bucket
         """
 
-        if folder == "daily_reports":
+        if folder == "daily":
             return self.__daily_reports
-        elif folder == "monthly_reports":
+        elif folder == "monthly":
             return self.__monthly_reports
         else:
             return []
@@ -68,7 +73,7 @@ class S3Connection:
         """
 
         self._s3_connection.download_file(
-            "test-medway-bucket",               # Bucket name - S3 bucket
+            "medway-reports-pdfs",              # Bucket name - S3 bucket
             f"{folder}/{file_name}.pdf",        # Key - Path to the file in the S3 bucket
             f"{download_path}/{file_name}.pdf"  # Filename - Path where the file will be downloaded
         )

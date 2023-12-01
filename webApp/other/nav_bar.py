@@ -56,7 +56,7 @@ class NavBar:
         page.go("/")
 
 
-    def _week_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
+    def _daily_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
         """
         Elevates the week reports button on hover.
 
@@ -78,7 +78,7 @@ class NavBar:
                 self._nav_bar.content.controls[2].update()
 
 
-    def _week_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+    def _daily_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
         """
         Changes the route of the page on click.
 
@@ -95,9 +95,48 @@ class NavBar:
         page.go("/daily_reports")
 
 
-    def _general_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
+    # def _monthly_reports_button_on_hover(self, _: ft.HoverEvent) -> None:
+    #     """
+    #     Elevates the general reports button on hover.
+
+    #     Parameters:
+    #         - :param:`_` (ft.HoverEvent): The hover event.
+
+    #     Returns:
+    #         - No return value.
+    #     """
+
+    #     if _.data == "true":
+    #         for __ in range(20):
+    #             self._nav_bar.content.controls[3].elevation += 1
+    #             self._nav_bar.content.controls[3].update()
+
+    #     else:
+    #         for __ in range(20):
+    #             self._nav_bar.content.controls[3].elevation -= 1
+    #             self._nav_bar.content.controls[3].update()
+
+
+    # def _monthly_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
+    #     """
+    #     Changes the route of the page on click.
+
+    #     Parameters:
+    #         - :param:`_` (ft.ControlEvent): The click event.
+    #         - :param:`page` (ft.Page): The current page of the app.
+
+    #     Returns:
+    #         - No return value.
+    #     """
+
+    #     self._nav_bar.content.controls[3].elevation = 0
+
+    #     page.go("/monthly_reports")
+
+
+    def _analytics_button_on_hover(self, _: ft.HoverEvent) -> None:
         """
-        Elevates the general reports button on hover.
+        Elevates the analytics button on hover.
 
         Parameters:
             - :param:`_` (ft.HoverEvent): The hover event.
@@ -117,45 +156,6 @@ class NavBar:
                 self._nav_bar.content.controls[3].update()
 
 
-    def _general_reports_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
-        """
-        Changes the route of the page on click.
-
-        Parameters:
-            - :param:`_` (ft.ControlEvent): The click event.
-            - :param:`page` (ft.Page): The current page of the app.
-
-        Returns:
-            - No return value.
-        """
-
-        self._nav_bar.content.controls[3].elevation = 0
-
-        page.go("/monthly_reports")
-
-
-    def _analytics_button_on_hover(self, _: ft.HoverEvent) -> None:
-        """
-        Elevates the analytics button on hover.
-
-        Parameters:
-            - :param:`_` (ft.HoverEvent): The hover event.
-
-        Returns:
-            - No return value.
-        """
-
-        if _.data == "true":
-            for __ in range(20):
-                self._nav_bar.content.controls[4].elevation += 1
-                self._nav_bar.content.controls[4].update()
-
-        else:
-            for __ in range(20):
-                self._nav_bar.content.controls[4].elevation -= 1
-                self._nav_bar.content.controls[4].update()
-
-
     def _analytics_button_on_click(self, _: ft.ControlEvent, page: ft.Page) -> None:
         """
         Changes the route of the page on click.
@@ -168,7 +168,7 @@ class NavBar:
             - No return value.
         """
 
-        self._nav_bar.content.controls[4].elevation = 0
+        self._nav_bar.content.controls[3].elevation = 0
 
         page.go("/analytics")
 
@@ -193,7 +193,7 @@ class NavBar:
                 border_radius = styles["button"]["border_radius"],
                 alignment = ft.alignment.center,
                 content = ft.Image(
-                    src = "images/logo.png",
+                    src = "./images/logo.png",
                     fit = ft.ImageFit.FILL
                 ),
                 on_hover = lambda _: self._home_button_on_hover(_),
@@ -201,7 +201,7 @@ class NavBar:
             )
         )
 
-        _week_reports_button: ft.Card = ft.Card(
+        _daily_reports_button: ft.Card = ft.Card(
             elevation = 0,
             color = styles["button"]["bgcolor"],
             content = ft.Container(
@@ -214,28 +214,28 @@ class NavBar:
                     color = styles["button"]["button_color"],
                     size = styles["button"]["button_size"]
                 ),
-                on_hover = lambda _: self._week_reports_button_on_hover(_),
-                on_click = lambda _: self._week_reports_button_on_click(_, page)
+                on_hover = lambda _: self._daily_reports_button_on_hover(_),
+                on_click = lambda _: self._daily_reports_button_on_click(_, page)
             )
         )
 
-        _general_reports_button: ft.Card = ft.Card(
-            elevation = 0,
-            color = styles["button"]["bgcolor"],
-            content = ft.Container(
-                width = styles["button"]["width"],
-                height = styles["button"]["height"],
-                border_radius = styles["button"]["border_radius"],
-                alignment = ft.alignment.center,
-                content = ft.Icon(
-                    name = ft.icons.COLLECTIONS_BOOKMARK,
-                    color = styles["button"]["button_color"],
-                    size = styles["button"]["button_size"]
-                ),
-                on_hover = lambda _: self._general_reports_button_on_hover(_),
-                on_click = lambda _: self._general_reports_button_on_click(_, page)
-            )
-        )
+        # _monthly_reports_button: ft.Card = ft.Card(
+        #     elevation = 0,
+        #     color = styles["button"]["bgcolor"],
+        #     content = ft.Container(
+        #         width = styles["button"]["width"],
+        #         height = styles["button"]["height"],
+        #         border_radius = styles["button"]["border_radius"],
+        #         alignment = ft.alignment.center,
+        #         content = ft.Icon(
+        #             name = ft.icons.COLLECTIONS_BOOKMARK,
+        #             color = styles["button"]["button_color"],
+        #             size = styles["button"]["button_size"]
+        #         ),
+        #         on_hover = lambda _: self._general_reports_button_on_hover(_),
+        #         on_click = lambda _: self._general_reports_button_on_click(_, page)
+        #     )
+        # )
 
         _analytics_button: ft.Card = ft.Card(
             elevation = 0,
@@ -268,10 +268,12 @@ class NavBar:
                     ft.Container(width = 75, height = 15),
                     # Home page button
                     _home_button,
-                    # Week reports button
-                    _week_reports_button,
-                    # General reports button
-                    _general_reports_button,
+                    # Daily reports button
+                    _daily_reports_button,
+                    
+                    # Monthly reports button
+                    # _monthly_reports_button,
+                    
                     # Analytics button
                     _analytics_button,
                 ]

@@ -192,6 +192,26 @@ class Styles:
                 "color" : "#3A3E5F",
                 "size" : 70,
                 "height" : 175,
+            },
+            "table" : {
+                "max_height" : 600,
+                "header_height" : 50,
+                "cell_width" : 125,
+                "font" : "Arimo",
+                "font_size_header" : 25,
+                "font_size_content" : 20,
+                "color" : "#3A3E5F",
+                "bgcolor" : "#FFFFFF",
+                "bgcolor_header" : "#8FF0D5",
+                "bgcolor_hovered" : "#A7ECF4",
+                "border_color" : "#3A3E5F",
+                "horizontal_line_color" : "#3A3E5F",
+                "border_radius" : 25,
+                "border_radius_adjusted" : 20,
+            },
+            "refresh_button" : {
+                "bgcolor" : "#0BA391",
+                "icon_color" : "#3A3E5F",
             }
         }
 

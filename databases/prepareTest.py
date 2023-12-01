@@ -12,6 +12,11 @@ def populateRDS() -> None:
     manager = MySQLmanager(managerType="testing")
     manager.populateTestDatabase()
     print("Populated RDS database.")
+    
+def populateLocal() -> None:
+    manager = MySQLmanager(managerType="local")
+    manager.populateTestDatabase()
+    print("Populated local database.")
 
 def clearDatabase() -> None:
     manager = MySQLmanager(managerType="testing")
@@ -19,8 +24,9 @@ def clearDatabase() -> None:
     print("Cleared all the table for sensor data.")
 
 def main() -> None:
-    createTable()
-    populateRDS()
+    #createTable()
+    # populateRDS()
+    populateLocal()
     # clearDatabase()
     
 

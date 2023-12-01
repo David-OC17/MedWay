@@ -1,6 +1,8 @@
 #----------------------------------#
 # Other
 .vscode
+/AWS.zip
+/AWS/*
 /test/AWS/upload/*
 /databases/config.py
 /test/databaseConnection/config.py

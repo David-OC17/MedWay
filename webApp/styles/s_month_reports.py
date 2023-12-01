@@ -1,7 +1,5 @@
 
 import flet as ft
-from os.path import expanduser, join
-from botocore.exceptions import ClientError
 
 from styles.styles import Styles
 from other.file_card import FileCard

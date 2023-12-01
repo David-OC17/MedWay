@@ -26,6 +26,9 @@ def Analytics(page: ft.Page) -> ft.Column:
     # Title of the analytics page
     title: ft.Container = SAnalytics.title()
 
+    # Table with the last data batch
+    table: ft.Container = SAnalytics().last_data_batch_table()
+
     # Properties of the analytics page
     view: ft.Column = ft.Column(
         spacing = 25,
@@ -48,14 +51,16 @@ def Analytics(page: ft.Page) -> ft.Column:
                             content = ft.Column(
                                 controls = [
                                     # Title of the analytics page
-                                    title
+                                    title,
+                                    # Table with the last data batch
+                                    table
                                 ]
                             )
                         )
                     ]
                 )
-            )
-        ]
+            ),
+        ],
     )
 
     return view

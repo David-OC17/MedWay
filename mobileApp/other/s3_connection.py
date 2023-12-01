@@ -15,23 +15,23 @@ class S3Connection:
         # Connection to the S3 bucket
         self._s3_connection: Session = client(
             "s3",
-            aws_access_key_id = "AKIA5RCYKSQAPI3AKL3K",
-            aws_secret_access_key = "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",
+            aws_access_key_id = "AKIATSSHLUNW3P4HN56K",
+            aws_secret_access_key = "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",
             region_name = "us-east-2",
         )
         # Files in the S3 bucket
-        __files = self._s3_connection.list_objects(Bucket="test-medway-bucket")["Contents"]
+        __files = self._s3_connection.list_objects(Bucket="medway-reports-pdfs")["Contents"]
         # Daily reports
         self.__daily_reports: list[str] = [
             file["Key"].split("/")[-1].split(".")[0]
             for file in __files
-            if "daily_reports" in file["Key"] and file["Key"] != "daily_reports/"
+            if "daily" in file["Key"] and file["Key"] != "daily/"
         ]
         # Monthly reports
         self.__monthly_reports: list[str] = [
             file["Key"].split("/")[-1].split(".")[0]
             for file in __files
-            if "monthly_reports" in file["Key"] and file["Key"] != "monthly_reports/"
+            if "monthly" in file["Key"] and file["Key"] != "monthly/"
         ]
 
 
@@ -46,9 +46,9 @@ class S3Connection:
             - list[str]: The file names from the S3 bucket
         """
 
-        if folder == "daily_reports":
+        if folder == "daily":
             return self.__daily_reports
-        elif folder == "monthly_reports":
+        elif folder == "monthly":
             return self.__monthly_reports
         else:
             return []
@@ -68,7 +68,7 @@ class S3Connection:
 
         url: str = self._s3_connection.generate_presigned_url(
             ClientMethod = "get_object",
-            Params = {"Bucket": "test-medway-bucket", "Key": f"{folder}/{file_name}.pdf"},
+            Params = {"Bucket": "medway-reports-pdfs", "Key": f"{folder}/{file_name}.pdf"},
             ExpiresIn = 3600,
         )
 

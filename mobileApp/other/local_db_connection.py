@@ -13,11 +13,17 @@ class LocalDBConnection:
 
     def __init__(self) -> None:
         # Private attributes
+        # self.__database: MySQLConnection = connect(
+        #     host = getenv("LOCAL_DB_HOST"),
+        #     user = getenv("LOCAL_DB_USER"),
+        #     password = getenv("LOCAL_DB_PASSWORD"),
+        #     database = getenv("LOCAL_DB_DATABASE")
+        # )
         self.__database: MySQLConnection = connect(
-            host = getenv("LOCAL_DB_HOST"),
-            user = getenv("LOCAL_DB_USER"),
-            password = getenv("LOCAL_DB_PASSWORD"),
-            database = getenv("LOCAL_DB_DATABASE")
+            host = "test-cloud-database.ctqvdwxx2rl5.us-east-2.rds.amazonaws.com",
+            user = "admin",
+            password = "YaelUwU1234",
+            database = "test_cloud_database"
         )
         self.__cursor: MySQLCursor = None
 
@@ -37,10 +43,10 @@ class LocalDBConnection:
         # Open the connection to the local database if it was closed
         if not self.__database.is_connected():
             self.__database: MySQLConnection = connect(
-                host = getenv("LOCAL_DB_HOST"),
-                user = getenv("LOCAL_DB_USER"),
-                password = getenv("LOCAL_DB_PASSWORD"),
-                database = getenv("LOCAL_DB_DATABASE")
+                host = "test-cloud-database.ctqvdwxx2rl5.us-east-2.rds.amazonaws.com",
+                user = "admin",
+                password = "YaelUwU1234",
+                database = "test_cloud_database"
             )
 
         # Open a connection to the local database through a cursor

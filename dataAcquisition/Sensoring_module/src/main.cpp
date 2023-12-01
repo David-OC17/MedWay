@@ -12,12 +12,7 @@
 #define RED 27
 #define GREEN 14
 #define BLUE 12
-
-// Wifi connection
-const char* ssid = "55 HOME";
-const char* password = "bienvenidos55";
-WiFiServer server(80);
-const int wifi_timeout = 30000;   // Timeout to stop checking for wifi connection
+#define BUZZER 13
  
 // Constants
 const int time2send = 3000;
@@ -62,6 +57,9 @@ uint8_t accel_count;
 // Time management
 unsigned long time_aux = 0;
 
+// Send data
+String data = "";
+
 ///// MPU INTERRUPT /////////////////////////
 volatile bool mpu_interrupt = false;
 void dmpDataReady(){
@@ -77,20 +75,6 @@ void getGpsInfo(){
         meters = gps.altitude.meters();
         sats = gps.satellites.value();
       }
-}
-
-void wifiConnect(){
-  // Wifi begin
-  time_aux = millis();
-  WiFi.begin(ssid, password);
-  while(WiFi.status() != WL_CONNECTED && millis() - time_aux < wifi_timeout){
-    delay(500);
-    Serial.println("Connecting to WiFi");
-  }
-  // Update connected flag
-  if(WiFi.status() == WL_CONNECTED){
-    wifi_connected = true;
-  }
 }
 
 void getMpuData(){
@@ -121,8 +105,8 @@ void updateRGBStat(){
     analogWrite(GREEN, 0);
     analogWrite(BLUE, 255);
   }else if(!wifi_connected && mpu_connected){
-    analogWrite(RED, 255);     // ORANGE
-    analogWrite(GREEN, 165);
+    analogWrite(RED, 0);     // ORANGE
+    analogWrite(GREEN, 255);
     analogWrite(BLUE, 0);
   }else{
     analogWrite(RED, 255);   // RED (nothing works)
@@ -145,6 +129,7 @@ void setup() {
   dht.begin();
 
   // Enable LEDS
+  pinMode(BUZZER, OUTPUT);
   pinMode(EN_LED, OUTPUT);
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
@@ -154,18 +139,14 @@ void setup() {
   Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
   device_status = mpu.dmpInitialize();
 
+  // Blue while calibrating
   analogWrite(BLUE, 255);
   analogWrite(RED, 0);
   analogWrite(GREEN, 0);
 
-  // Wifi begin
-  wifiConnect();
-  Serial.print("Connected to WiFi. IP address: ");
-  Serial.println(WiFi.localIP());
-  server.begin();
-
   // MPU DMP status handling
   if(device_status == 0){
+    mpu_connected = true;
     mpu.setDMPEnabled(true);
 
     // Calibrate 
@@ -181,8 +162,6 @@ void setup() {
     // dmp_ready = true;
     
     packet_size = mpu.dmpGetFIFOPacketSize();  // Expected packet size for dmp
-    mpu_connected = true;
-
   }else{
     // Error: 1 = Initial memory load failed, 2 = DMP configuration updates failed
     Serial.println("DMP config failed with code " + String(device_status));
@@ -191,17 +170,18 @@ void setup() {
   
   // Update RGB LED as flag
   updateRGBStat();
+
+  // Start sound !
+  while(millis() < 2500){
+    digitalWrite(BUZZER, HIGH);
+  }
+  
+  digitalWrite(BUZZER, LOW);
 }
 
 /////////////////////////////////////////////
 
 void loop() {
-  // WiFi client handling
-  WiFiClient client = server.available();   // Get available clients for connection
-  if(client.connected()){
-    client.println("Sup yo");
-  }
-
   // While there is no available data from MPU
   if(millis() - time_aux >= time2send){
     // DHT section
@@ -223,6 +203,12 @@ void loop() {
     Serial.println("Altitude: " + String(meters));
     Serial.println("Acceleration: " + String(aaReal.x) + " " + String(aaReal.y) + " " + String(aaReal.z));
     Serial.println("Gyroscope: " + String(ypr[0] * 180/M_PI) + " " + String(ypr[1] * 180/M_PI) + " " + String(ypr[2] * 180/M_PI) + "\n");
+
+    data = String(temp) + "," + String(hum) + "," + String(lon) + "," + String(lat) + "," + String(meters) + "," + 
+           String(aaReal.x) + "," + String(aaReal.y) + "," + String(aaReal.z) + "," + String(ypr[0] * 180/M_PI) + "," 
+           + String(ypr[1] * 180/M_PI) + "," + String(ypr[2] * 180/M_PI);
+
+    Serial.println(data);
 
     time_aux = millis();
   }

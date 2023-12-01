@@ -82,6 +82,7 @@ class RandomDataGenerator:
         # Return the tuple of all the modified lists and the new state for the row
         return light, humidity, temperature, state
     
+    
     def generator(self, numData:int, numBatches:int, withLabels:bool = False) -> None:
         """
         Generates random data for humidity and returns it in a .csv file.
@@ -101,10 +102,10 @@ class RandomDataGenerator:
         
         # Select the appropriate values for including labels or not (default to false)
         if withLabels:
-            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage", "state"]
+            header = ["ID", "batch_number", "device_number", "date", "time", "x_coordinate", "y_coordinate", "temperature", "humidity", "light_percentage", "state"]
             pathToFile = "../data/sensor_data_train.csv"
         else:
-            header = ["ID", "batch_number", "device_number", "date", "temperature", "humidity", "light_percentage"]
+            header = ["ID", "batch_number", "device_number", "date", "time", "x_coordinate", "y_coordinate", "temperature", "humidity", "light_percentage"]
             pathToFile = "../data/sensor_data.csv"
             
         
@@ -124,10 +125,28 @@ class RandomDataGenerator:
                     #Add title to the .csv file
                     writer.writerow(header)
                     last_id: int = 0
+                    
+            x_coordinate_pool = [
+                    19.4326, 21.1619, 20.9676, 25.4382, 23.6345,
+                    19.7035, 20.5881, 25.4336, 22.1565, 23.7369,
+                    27.9698, 21.1619, 20.5881, 19.4326, 21.1743,
+                    17.0722, 20.9984, 20.6774, 22.3964, 19.4326
+                ]
+
+            y_coordinate_pool = [
+                -99.1332, -86.8475, -89.1800, -100.9737, -102.5528,
+                -101.1824, -100.3899, -100.9599, -101.0201, -90.3831,
+                -110.9556, -86.8475, -100.3899, -99.1332, -101.9018,
+                -96.7237, -89.1860, -103.3500, -101.8984, -99.1332
+            ]
 
 
             # Write several data rows for each batch number
             for this_batch_number in this_batch_numbers:
+                # Select one random pair of coordinates from a pool
+                x_coordinate = str(np.random.choice(x_coordinate_pool))
+                y_coordinate = str(np.random.choice(y_coordinate_pool))
+
                 # Generate random data
                 batch_number: list[np.int64] = np.full((1, numData), this_batch_number).tolist()[0]
                 device_number: list[np.int64] = np.full((1, numData), 729864).tolist()[0]
@@ -138,17 +157,23 @@ class RandomDataGenerator:
                 # Check which values in the temperature, humidity or light percentage are over the accepted 
                 #   limit and generate a line for the batch alerts if so
                 # light --> 0, humidity --> 1, temperature --> 2, list[bool] --> 3
-                if withLabels:
-                    modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.05)
+                modified = self.replaceSome(light=light_percentage, temperature=temperature, humidity=humidity, percentageReplace=0.05)
                 
+                if withLabels:
                     # Write data to file
                     for idx in range(numData):
-                        date: str = strftime("%d/%b/%Y %H:%M:%S")
+                        # Extract date and time components
+                        date_component = strftime("%d/%b/%Y")
+                        time_component = strftime("%H:%M:%S")
+                        # ID,batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
                         row: tuple = (
                             last_id + 1,
                             batch_number[idx],
                             device_number[idx],
-                            date,
+                            date_component,
+                            time_component,
+                            x_coordinate,
+                            y_coordinate,
                             modified[2][idx],
                             modified[1][idx],
                             modified[0][idx],
@@ -158,17 +183,21 @@ class RandomDataGenerator:
                         last_id += 1
                 
                 else:                
-                    # Write data to file
                     for idx in range(numData):
-                        date: str = strftime("%d/%b/%Y %H:%M:%S")
+                        date_component = strftime("%d/%b/%Y")
+                        time_component = strftime("%H:%M:%S")
+                        # ID,batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
                         row: tuple = (
                             last_id + 1,
                             batch_number[idx],
                             device_number[idx],
-                            date,
-                            temperature[idx],
-                            humidity[idx],
-                            light_percentage[idx]
+                            date_component,
+                            time_component,
+                            x_coordinate,
+                            y_coordinate,
+                            modified[2][idx],
+                            modified[1][idx],
+                            modified[0][idx],
                         )
                         writer.writerow(row)
                         last_id += 1

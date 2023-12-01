@@ -37,12 +37,10 @@ We combine several technologies and tools in order to produce a valuable and use
 <a href="https://www.mysql.com/" target="_blank" rel="noreferrer">
 <img src="https://1.bp.blogspot.com/-TNexKzkEY8M/Xk_d5jtWiAI/AAAAAAAAAqk/9GMEeX7Vuj8qK3YkOJHae3YHAzE1P-2PwCPcBGAYYCw/s1600/mysql-logo.png" alt="python" height="40"/>
 </a>
-</p>
-
-<!-- <a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/2ecad22021fc13e37458a8d2b508a47352c096930f163927cb191353106f9309/68747470733a2f2f74656368737461636b2d67656e657261746f722e76657263656c2e6170702f646f636b65722d69636f6e2e737667">
+<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/2ecad22021fc13e37458a8d2b508a47352c096930f163927cb191353106f9309/68747470733a2f2f74656368737461636b2d67656e657261746f722e76657263656c2e6170702f646f636b65722d69636f6e2e737667">
 <img src="https://camo.githubusercontent.com/2ecad22021fc13e37458a8d2b508a47352c096930f163927cb191353106f9309/68747470733a2f2f74656368737461636b2d67656e657261746f722e76657263656c2e6170702f646f636b65722d69636f6e2e737667" alt="icon" width="40" height="40">
-</a> -->
-
+</a>
+</p>
 
 ## Subparts of the system
 
@@ -108,3 +106,8 @@ python3 createSQL.py
 9. Wait for the main actions to occur, sending information to the cloud database, generating the reports and seeing the results via the web/mobile app.
 
 To familiarize yourself with the whole system, use the tests inside the `./test/` directory. Also, use the tests to try your local set-up before trying to run the complete system.
+
+## Testing
+
+### AWS
+In order to test the deployment of the Lambda function before uploading to AWS you may use the [SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) locally.

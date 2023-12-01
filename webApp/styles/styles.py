@@ -194,6 +194,7 @@ class Styles:
                 "height" : 175,
             },
             "table" : {
+                "max_height" : 600,
                 "header_height" : 50,
                 "cell_width" : 125,
                 "font" : "Arimo",
@@ -206,6 +207,11 @@ class Styles:
                 "border_color" : "#3A3E5F",
                 "horizontal_line_color" : "#3A3E5F",
                 "border_radius" : 25,
+                "border_radius_adjusted" : 20,
+            },
+            "refresh_button" : {
+                "bgcolor" : "#0BA391",
+                "icon_color" : "#3A3E5F",
             }
         }
 

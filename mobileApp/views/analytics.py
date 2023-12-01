@@ -19,8 +19,13 @@ def Analytics(page: ft.Page) -> ft.Column:
         - ft.Column: The analytics page.
     """
 
+    # Refresh button for the data table
+    page.floating_action_button: ft.FloatingActionButton = SAnalytics().refresh_button(page)
+
     # Title of the analytics page
     title: ft.Container = SAnalytics.title()
+    # Table with the last batch of data
+    table: ft.Container = SAnalytics().last_data_batch_table()
 
     # Properties of the analytics page
     view: ft.Column = ft.Column(
@@ -36,7 +41,9 @@ def Analytics(page: ft.Page) -> ft.Column:
                 content = ft.Column(
                     controls = [
                         # Title of the analytics page
-                        title
+                        title,
+                        # Table with the last batch of data
+                        table
                     ]
                 )
             )

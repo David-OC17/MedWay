@@ -193,7 +193,7 @@ class NavBar:
                 border_radius = styles["button"]["border_radius"],
                 alignment = ft.alignment.center,
                 content = ft.Image(
-                    src = "images/logo.png",
+                    src = "./images/logo.png",
                     fit = ft.ImageFit.FILL
                 ),
                 on_hover = lambda _: self._home_button_on_hover(_),

@@ -23,10 +23,12 @@ def Analytics(page: ft.Page) -> ft.Column:
     # Navigation bar
     nav_bar: ft.Container = NavBar().nav_bar(page)
 
+    # Refresh button for the data table
+    page.floating_action_button: ft.FloatingActionButton = SAnalytics().refresh_button(page)
+
     # Title of the analytics page
     title: ft.Container = SAnalytics.title()
-
-    # Table with the last data batch
+    # Table with the last batch of data
     table: ft.Container = SAnalytics().last_data_batch_table()
 
     # Properties of the analytics page
@@ -52,7 +54,7 @@ def Analytics(page: ft.Page) -> ft.Column:
                                 controls = [
                                     # Title of the analytics page
                                     title,
-                                    # Table with the last data batch
+                                    # Table with the last batch of data
                                     table
                                 ]
                             )

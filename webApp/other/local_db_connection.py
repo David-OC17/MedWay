@@ -2,7 +2,9 @@
 from mysql.connector import MySQLConnection, connect
 from mysql.connector.cursor import MySQLCursor
 from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class LocalDBConnection:
     """

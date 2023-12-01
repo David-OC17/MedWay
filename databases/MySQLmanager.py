@@ -15,14 +15,11 @@ To create a manager for the local database, use 'local' managerType in construct
 or 'aws' option for a cloud database manager.
 '''
 
-# Import to remove
-from allQueryResult import QueryResult
-
 from dotenv import load_dotenv
 from mysql.connector import Error
 from datetime import datetime, timedelta
 from mysql.connector import connect
-from time import strftime, time
+from time import time
 import serial
 import csv
 import os
@@ -240,9 +237,9 @@ class MySQLmanager:
         elif self.managerType != 'local_test':
             print('You can only clear all the database during testing and with a local_test manager.')
         
-        confirmation = input('This a destructive action. To confirm, enter Y/y and enter. Any other characters cancel the operation.')
-        if confirmation != 'Y' or confirmation != 'n':
-            print('Database clearance cancelled.')
+        # confirmation = input('This a destructive action. To confirm, enter Y/y and enter. Any other characters cancel the operation.')
+        # if confirmation != 'Y' or confirmation != 'n':
+        #     print('Database clearance cancelled.')
         
         # Proceed with clearing the database
         connection = connect(**self.db_config)
@@ -281,7 +278,7 @@ class MySQLmanager:
             connection = connect(**self.db_config)
             cursor = connection.cursor()
 
-            # Define the INSERT INTO query with placeholders for data
+            # ID,batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
             insert_query = """
             INSERT INTO sensor_data (batch_number, device_number, date, time, x_coordinate, y_coordinate, temperature, humidity, light_percentage)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -293,7 +290,8 @@ class MySQLmanager:
                 csvreader = csv.reader(csvfile)
                 next(csvreader)  # Skip header row
                 for row in csvreader:
-                    # Assuming the CSV columns are in the same order as the INSERT query
+                    # Remove the ID
+                    row = row[1:]
                     data_list.append(tuple(row))
 
             # Execute the query with data_list as a list of tuples
@@ -314,9 +312,6 @@ class MySQLmanager:
     #################### START -> CSV Generator ####################
 
     def csv_generator(self) -> None:
-        
-        if self.managerType != 'cloud':
-            raise ValueError('Cloud manager cannot alter local database. Create local manager to modify local database.')
         try:
             print("Generating CSV file...")
             header = ['ID','batch_number','device_number','date','time','x_coordinate','y_coordinate','temperature','humidity','light_percentage']
@@ -324,25 +319,26 @@ class MySQLmanager:
             # Get the previous date
             current_date = datetime.today()
             previous_Date = current_date - timedelta(days=1)   
+            
+            # Connect to the MySQL database
+            connection = connect(**self.db_config)
+            cursor = connection.cursor()
 
             # Open the CSV file in write mode
-            with open('./analysis/temp/tempData.csv', 'w', newline='') as tempData:
+            with open('./temp/tempData.csv', 'w', newline='') as tempData:
+                print("Writing to the file.")
                 csv_writer = csv.writer(tempData)
                 csv_writer.writerow(header)
-
-                # Connect to the MySQL database
-                connection = connect(**self.db_config)
-                cursor = connection.cursor()
 
                 # Convert startDate and endDate to MySQL type for query
                 startDate = previous_Date
                 mysql_startDate = startDate.strftime("%Y-%m-%d")
 
-                endDate = previous_Date
+                endDate = current_date
                 mysql_endDate = endDate.strftime("%Y-%m-%d")
 
                 # Define and execute the SELECT query
-                select_query = f"SELECT * FROM sensor_data WHERE date >= '{mysql_startDate}' AND date <= '{mysql_endDate}';"
+                select_query = f"SELECT * FROM sensor_data;"
                 cursor.execute(select_query)
                 
                 # Fetch all rows from the query result
@@ -351,9 +347,10 @@ class MySQLmanager:
                 # Write the rows to the CSV file
                 for row in rows:
                     csv_writer.writerow(row)
-        
+
         except Error as e:
             print(f"Error: {e}")
+
         finally:
             if connection.is_connected():
                 cursor.close()

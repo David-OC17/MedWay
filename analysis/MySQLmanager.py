@@ -53,6 +53,7 @@ class MySQLmanager:
             data_list = []
             for row in cursor.fetchall():
                 # Append each row as a tuple to the data list
+                print(row)
                 data_list.append(row)
 
             return data_list # Return the tuple
@@ -86,11 +87,11 @@ class MySQLmanager:
                 startDate = previous_Date
                 mysql_startDate = startDate.strftime("%Y-%m-%d")
 
-                endDate = previous_Date
+                endDate = current_date
                 mysql_endDate = endDate.strftime("%Y-%m-%d")
 
                 # Define and execute the SELECT query
-                select_query = f"SELECT * FROM sensor_data WHERE date >= '{mysql_startDate}' AND date <= '{mysql_endDate}';"
+                select_query = f"SELECT * FROM sensor_data;"
                 cursor.execute(select_query)
                 
                 # Fetch all rows from the query result

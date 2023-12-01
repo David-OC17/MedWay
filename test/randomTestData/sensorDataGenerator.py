@@ -163,7 +163,7 @@ class RandomDataGenerator:
                     # Write data to file
                     for idx in range(numData):
                         # Extract date and time components
-                        date_component = strftime("%d/%b/%Y")
+                        date_component = strftime("%Y-%m-%d")
                         time_component = strftime("%H:%M:%S")
                         # ID,batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
                         row: tuple = (
@@ -184,7 +184,7 @@ class RandomDataGenerator:
                 
                 else:                
                     for idx in range(numData):
-                        date_component = strftime("%d/%b/%Y")
+                        date_component = strftime("%Y-%m-%d")
                         time_component = strftime("%H:%M:%S")
                         # ID,batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage
                         row: tuple = (

@@ -1,1 +1,1 @@
-rm ./temp/dailyReport.pdf
+rm ./reports/dailyReport.pdf

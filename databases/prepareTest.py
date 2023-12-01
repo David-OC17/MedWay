@@ -6,16 +6,23 @@ def createTable() -> None:
     manager = MySQLmanager(managerType="testing")
     manager.create_sensor_data_table()
     print("Created tables")
-    manager.csv_generator()
+    # manager.csv_generator()
 
 def populateRDS() -> None:
     manager = MySQLmanager(managerType="testing")
     manager.populateTestDatabase()
     print("Populated RDS database.")
 
+def clearDatabase() -> None:
+    manager = MySQLmanager(managerType="testing")
+    manager.clearDatabase(confirmation='DELETE ME')
+    print("Cleared all the table for sensor data.")
+
 def main() -> None:
-    # createTable()
+    createTable()
     populateRDS()
+    # clearDatabase()
+    
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,1 @@
+rm ./reports/dailyReport.pdf

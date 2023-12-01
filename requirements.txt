@@ -11,3 +11,4 @@ pickleshare == 0.7.5
 matplotlib == 3.8.0
 python-dotenv == 1.0.0
 flet == 0.12.2
+pyserial == 3.5

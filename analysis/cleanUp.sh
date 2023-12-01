@@ -8,7 +8,6 @@ rm ./temp/dailyReport.tex
 rm ./temp/temperature_plot.png
 rm ./temp/humidity_plot.png
 rm ./temp/light_plot.png
+rm ./temp/tempData.csv
 
 rm -r _minted-dailyReport
-
-rm ./reports/dailyReport.pdf

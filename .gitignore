@@ -1,6 +1,7 @@
 #----------------------------------#
 # Other
 .vscode
+/test/AWS/upload/*
 /databases/config.py
 /test/databaseConnection/config.py
 # Change from config.py --> .env

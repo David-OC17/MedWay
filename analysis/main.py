@@ -7,15 +7,14 @@ The options for the analysis are:
 
 The implementation uses a XGboost. See the `About.md` file for more information.
 '''
-from boto3.session import Session
-from boto3 import client
+
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from stateAnalysis import analyzeState, trainAnalyzeState
 from reportGenerator import generatePDF, conditionStatistics, createStateTable
 import subprocess
 # import argparse
-import datetime
 import os
+from time import strftime
 from dotenv import load_dotenv
 import boto3
 from MySQLmanager import MySQLmanager
@@ -61,34 +60,32 @@ def main() -> None:
     generatePDF(periodType=periodType, product='Insulin', passed=stateResults[4] ,alertCount=stateResults[0], numBatches=stateResults[1], goodBatches=stateResults[2], badBatches=stateResults[3],
                 minTemp=statResults[0], maxTemp=statResults[1], minHum=statResults[2], maxHum=statResults[3], minLight=statResults[4], maxLight=statResults[5])
     
-    # subprocess.run(['bash'], './cleanUp.sh')
-    
-    # # Send the last .pdf report to the S3 bucket of its appropriate type
-    # if periodType == 'daily':
-    #     dia = datetime.now().strftime("%B %d")
-    #     local_pdf_path = './reports/dailyReport.pdf'
-    #     pdf_key = dia
+    subprocess.run(['bash', './cleanUp.sh'])
 
-    # elif periodType == 'monthly':
-    #     mes = datetime.now().strftime("%B")
-    #     local_pdf_path = './reports/monthlyReport.pdf'
-    #     pdf_key = mes
+    # Send the last .pdf report to the S3 bucket of its appropriate type
+    if periodType == 'daily':
+        day = strftime("%Y-%m-%d")
+        # day = "2023-11-17"
+        object_key = f'daily/{day}.pdf'
+        local_pdf_path = './reports/dailyReport.pdf'
+        bucket_name = 'medway-reports-pdfs'
 
-    # try:
-    #     s3 = boto3.client('s3', aws_access_key_id= os.getenv("S3_ACCESS_KEY_ID"), aws_secret_access_key= os.getenv("S3_SECRET_ACCESS_KEY"))
-    #     bucket_name = os.getenv("BUCKET_NAME")
-
-    #     s3.upload_file(local_pdf_path, bucket_name, pdf_key)
-    #     print(f"Upload of PDF to S3 Successful")
-    # except NoCredentialsError:
-    #     print("Credentials not available")
-    # except PartialCredentialsError:
-    #     print("Credentials not available")
-    # except Exception as e:
-    #     print(e)
-
-    
-    # subprocess.run(['bash'], './removeReport')
+    try:
+        s3 = boto3.client('s3', 
+                            aws_access_key_id=os.getenv("S3_ACCESS_KEY_ID"),
+                            aws_secret_access_key=os.getenv("S3_SECRET_ACCESS_KEY"))
+        
+        s3.upload_file(local_pdf_path, bucket_name, object_key)
+        
+        print(f"Upload of PDF to S3 Successful")
+    except NoCredentialsError:
+        print("Credentials not available")
+    except PartialCredentialsError:
+        print("Credentials not available")
+    except Exception as e:
+        print(e)
+        
+    subprocess.run(['bash', './removeReport.sh'])
 
 if __name__ == '__main__':
     main()

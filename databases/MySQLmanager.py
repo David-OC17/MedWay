@@ -23,6 +23,7 @@ from time import time
 import serial
 import csv
 import os
+import numpy as np
 
 load_dotenv()
 
@@ -384,6 +385,13 @@ class MySQLmanager:
             #Write out a single character encoded in utf-8; this is default encoding for Arduino serial COM
             #This character tells the Arduino to start sending data
             port.write(bytes('x','utf-8'))
+            
+            # Pools for batch numbers and device numbers
+            pool_size = 50
+            batch_number_pool = [np.random.randint(1, 9999) for _ in range(pool_size)]
+
+            # Generate random device numbers (assuming you want them unique)
+            device_number_pool = [np.random.randint(1, 9999) for _ in range(pool_size)]
 
             while True:
                 #Read in data from Serial until (new line) received

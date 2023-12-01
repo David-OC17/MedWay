@@ -19,7 +19,7 @@ def clearDatabase() -> None:
     print("Cleared all the table for sensor data.")
 
 def main() -> None:
-    createTable()
+    #createTable()
     populateRDS()
     # clearDatabase()
     

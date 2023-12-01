@@ -105,7 +105,7 @@ void updateRGBStat(){
     analogWrite(GREEN, 0);
     analogWrite(BLUE, 255);
   }else if(!wifi_connected && mpu_connected){
-    analogWrite(RED, 0);     // ORANGE
+    analogWrite(RED, 0);     // GREEN UPDATE
     analogWrite(GREEN, 255);
     analogWrite(BLUE, 0);
   }else{
@@ -136,13 +136,20 @@ void setup() {
   pinMode(BLUE, OUTPUT);
 
   // MPU and DMP init
-  Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
+  // Serial.println(mpu.testConnection()? "MPU connected succesfully" : "MPU failed to connect");
   device_status = mpu.dmpInitialize();
 
   // Blue while calibrating
   analogWrite(BLUE, 255);
   analogWrite(RED, 0);
   analogWrite(GREEN, 0);
+
+  // Start sound !
+  while(millis() < 2500){
+    digitalWrite(BUZZER, HIGH);
+  }
+  
+  digitalWrite(BUZZER, LOW);
 
   // MPU DMP status handling
   if(device_status == 0){
@@ -170,13 +177,6 @@ void setup() {
   
   // Update RGB LED as flag
   updateRGBStat();
-
-  // Start sound !
-  while(millis() < 2500){
-    digitalWrite(BUZZER, HIGH);
-  }
-  
-  digitalWrite(BUZZER, LOW);
 }
 
 /////////////////////////////////////////////
@@ -196,17 +196,19 @@ void loop() {
     }
 
     // PRINT DATA
-    Serial.println("Temperature: " + String(temp));
-    Serial.println("Humidity: " + String(hum));
-    Serial.println("Longitude: " + String(lon));
-    Serial.println("Latitude: " + String(lat));
-    Serial.println("Altitude: " + String(meters));
-    Serial.println("Acceleration: " + String(aaReal.x) + " " + String(aaReal.y) + " " + String(aaReal.z));
-    Serial.println("Gyroscope: " + String(ypr[0] * 180/M_PI) + " " + String(ypr[1] * 180/M_PI) + " " + String(ypr[2] * 180/M_PI) + "\n");
+    // Serial.println("Temperature: " + String(temp));
+    // Serial.println("Humidity: " + String(hum));
+    // Serial.println("Longitude: " + String(lon));
+    // Serial.println("Latitude: " + String(lat));
+    // Serial.println("Altitude: " + String(meters));
+    // Serial.println("Acceleration: " + String(aaReal.x) + " " + String(aaReal.y) + " " + String(aaReal.z));
+    // Serial.println("Gyroscope: " + String(ypr[0] * 180/M_PI) + " " + String(ypr[1] * 180/M_PI) + " " + String(ypr[2] * 180/M_PI) + "\n");
 
-    data = String(temp) + "," + String(hum) + "," + String(lon) + "," + String(lat) + "," + String(meters) + "," + 
-           String(aaReal.x) + "," + String(aaReal.y) + "," + String(aaReal.z) + "," + String(ypr[0] * 180/M_PI) + "," 
-           + String(ypr[1] * 180/M_PI) + "," + String(ypr[2] * 180/M_PI);
+    // data = String(temp) + "," + String(hum) + "," + String(lon) + "," + String(lat) + "," + String(meters) + "," + 
+    //        String(aaReal.x) + "," + String(aaReal.y) + "," + String(aaReal.z) + "," + String(ypr[0] * 180/M_PI) + "," 
+    //        + String(ypr[1] * 180/M_PI) + "," + String(ypr[2] * 180/M_PI);
+    
+    data = String(lon) + "," + String(lat) + "," + String(temp) + "," + String(hum);
 
     Serial.println(data);
 
@@ -217,6 +219,21 @@ void loop() {
   if(mpu_connected){
     getMpuData();
   }
+
+  // Manage bad orientation
+  if(ypr[2] * 180/M_PI >= 90 || ypr[3] * 180/M_PI >= 90){
+    // Serial.println("BAd orientatioon!");
+    digitalWrite(BUZZER, HIGH);
+  }else{
+    digitalWrite(BUZZER, LOW);
+  }
+
+  // if(aaReal.x >= 10000 || aaReal.y >= 10000 || aaReal.z >= 10000){
+  //   // Serial.println("BAd orientatioon!");
+  //   digitalWrite(BUZZER, HIGH);
+  // }else{
+  //   digitalWrite(BUZZER, LOW);
+  // }
 
   delay(100);
 }

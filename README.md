@@ -46,7 +46,12 @@ We combine several technologies and tools in order to produce a valuable and use
 
 ### Data acquisition
 
-Explain the data acquisition module...
+The data acquisition module is based on a ESP-32 micro-controller, using several sensors to acquire temperature, humidity, acceleration and position. We transfer the data to a computer that acts as a local server using Ubuntu, and temporarily store the data from the N modules running inside medicine/vaccine batches.
+
+<p align="center">
+  <img src="./images/sensingModule.png" width="500">
+</p>
+
 
 ### Databases
 
@@ -64,9 +69,11 @@ The model fits the dataset particularly well, as well as the decisions involved 
 
 <!-- Include image of the sensing module, once done -->
 
-### Webapp
+### Web and mobile application
 
-Describe the app...
+The web and mobile app is done via Flet. In the app there are 3 submenus, an introduction, one for downloading the PDF reports, and one that shows a table of the last 30 readings received from the modules.
+
+The app may also be accessed via a phone by generating an QR code that may be scanned using a phone, and will open up the equivalent UI that is generated in the web, inside the Flet app.
 
 ## Quick-start guide
 
@@ -107,7 +114,7 @@ python3 createSQL.py
 
 To familiarize yourself with the whole system, use the tests inside the `./test/` directory. Also, use the tests to try your local set-up before trying to run the complete system.
 
-## Testing
+<!-- ## Testing
 
 ### AWS
-In order to test the deployment of the Lambda function before uploading to AWS you may use the [SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) locally.
+In order to test the deployment of the Lambda function before uploading to AWS you may use the [SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) locally. -->

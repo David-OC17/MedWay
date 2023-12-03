@@ -10,6 +10,11 @@ class S3Connection:
 
     Dependency requiered for web app and the mobile app
     """
+    '''
+    S3_ACCESS_KEY_ID = 
+    S3_SECRET_ACCESS_KEY = 
+    BUCKET_NAME = 
+    '''
 
     def __init__(self) -> None:
         # Connection to the S3 bucket
@@ -20,7 +25,7 @@ class S3Connection:
             region_name = "us-east-2",
         )
         # Files in the S3 bucket
-        __files = self._s3_connection.list_objects(Bucket="medway-reports-pdfs")["Contents"]
+        __files = self._s3_connection.list_objects(Bucket="test-medway-bucket")["Contents"]
         # Daily reports
         self.__daily_reports: list[str] = [
             file["Key"].split("/")[-1].split(".")[0]

@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 from mysql.connector import connect
 from time import time
 import serial
+from serial import Serial
 import csv
 import os
 import numpy as np
@@ -74,7 +75,7 @@ class MySQLmanager:
     def send_to_cloud(self):
         # Set the time duration to 30 minutes (in seconds)
         duration = 30 * 60
-
+        
         # Check if the current time has exceeded the start time + duration
         if time() - self.__cloud_time_flag > duration:
             self.__cloud_time_flag = time()
@@ -271,9 +272,9 @@ class MySQLmanager:
     #################### END -> Delete from local ####################
     
     def populateTestDatabase(self) -> None:
-        # Check if it's a cloud manager
-        if self.managerType != 'testing':
-            raise ValueError('Only cloud-testing manager can populate the test RDS cloud. Create a testing manager to access.')
+        # # Check if it's a cloud manager
+        # if self.managerType != 'testing':
+        #     raise ValueError('Only cloud-testing manager can populate the test RDS cloud. Create a testing manager to access.')
 
         try:
             connection = connect(**self.db_config)
@@ -378,7 +379,7 @@ class MySQLmanager:
             #Program will wait until all serial data is received from Arduino
             #Port description will vary according to operating system. Linux will be in the form /dev/ttyXXXX and Windows and MAC will be COM#.
             
-            port = serial.Serial(port = 'COM3', baudrate = 9600)
+            port = Serial(port = '/dev/ttyUSB0', baudrate = 115200)
             if port.isOpen() == False:
                 port.open()
 
@@ -410,7 +411,8 @@ class MySQLmanager:
                 batch_number = 195251
                 device_number = 729864
                 sql = "INSERT INTO sensor_data (batch_number,device_number,date,time,x_coordinate,y_coordinate,temperature,humidity,light_percentage) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-                data = (int(batch_number),int(device_number),current_date,current_time,float(row_elements[0]),float(row_elements[1]),float(row_elements[2]), float(row_elements[3]), float(row_elements[4]))
+                light_dummy :np.float64 = 15 * np.random.random_sample()
+                data = (int(batch_number),int(device_number),current_date,current_time,float(row_elements[0]),float(row_elements[1]),float(row_elements[2]), float(row_elements[3]), light_dummy)
                 cursor.execute(sql,data)
 
                 # Commit the changes to the database

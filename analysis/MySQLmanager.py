@@ -15,7 +15,7 @@ load_dotenv()
 class MySQLmanager:            
     def __init__(self, testing:bool=False) -> None:
         '''
-        managerType: 'cloud' = 'aws' or 'local'
+        manager_type: 'cloud' = 'aws' or 'local'
             or 'local_test' for testing
         '''
         if testing:
@@ -35,7 +35,7 @@ class MySQLmanager:
 
     def fetch_data_from_database(self, start_id:int , end_id:int) -> list:
         '''
-        Get a range of rows of values from the local database. Query the range given by startID-endID.
+        Get a range of rows of values from the local database. Query the range given by start_id-end_id.
         Returns a list of values.
         '''
         try:

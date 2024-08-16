@@ -3,32 +3,31 @@
 from MySQLmanager import MySQLmanager
 
 def createTable() -> None:
-    manager = MySQLmanager(managerType="testing")
+    manager = MySQLmanager(manager_type="testing")
     manager.create_sensor_data_table()
     print("Created tables")
     # manager.csv_generator()
 
 def populateRDS() -> None:
-    manager = MySQLmanager(managerType="testing")
-    manager.populateTestDatabase()
+    manager = MySQLmanager(manager_type="testing")
+    manager.populate_test_database()
     print("Populated RDS database.")
-    
+ 
 def populateLocal() -> None:
-    manager = MySQLmanager(managerType="local")
-    manager.populateTestDatabase()
+    manager = MySQLmanager(manager_type="local")
+    manager.populate_test_database()
     print("Populated local database.")
 
 def clearDatabase() -> None:
-    manager = MySQLmanager(managerType="testing")
-    manager.clearDatabase(confirmation='DELETE ME')
+    manager = MySQLmanager(manager_type="testing")
+    manager.clear_database(confirmation='DELETE ME')
     print("Cleared all the table for sensor data.")
 
 def main() -> None:
-    #createTable()
+    # createTable()
     # populateRDS()
     populateLocal()
     # clearDatabase()
-    
 
 if __name__ == "__main__":
     main()
